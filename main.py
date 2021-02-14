@@ -26,6 +26,8 @@ def move():
     while True:
         cur_x, cur_y = ball.x_pos, ball.y_pos
         new_x, new_y = ball.x_pos + ball.x_vel, ball.y_pos + ball.y_vel
+
+        # Handling walls
         if new_x >= len(grid)-1:
             if ball.lives < 1 :
                 system("clear")
@@ -46,6 +48,18 @@ def move():
         if new_y == 0:
             new_y = 0
             ball.update_velo(ball.x_vel, -ball.y_vel)
+
+        # Handling bricks
+        if grid[new_x][new_y].has_brick:
+            if abs(new_x - cur_x) == 1:
+                ball.update_velo(-ball.x_vel, ball.y_vel)
+            if abs(new_y - cur_y) < 0:
+                ball.update_velo(ball.x_vel, -ball.y_vel)
+            ball.update_position(new_x, new_y)
+            grid[cur_x][cur_y].remove_ball()
+            grid[new_x][new_y].add_ball(ball)
+            continue
+
         ball.update_position(new_x, new_y)
         grid[cur_x][cur_y].remove_ball()
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
@@ -53,8 +67,9 @@ def move():
         render()
         time.sleep(0.5)
 
+
 if __name__ == '__main__':
-    initialize(20, 30)
+    initialize(15, 20)
     grid[1][2].add_brick(BlueBrick())
     grid[1][3].add_brick(BlueBrick())
     grid[1][4].add_brick(RedBrick())
@@ -66,10 +81,11 @@ if __name__ == '__main__':
     grid[2][5].add_brick(BlueBrick())
     grid[2][6].add_brick(BlueBrick())
     grid[3][2].add_brick(BlueBrick())
-    grid[3][3].add_brick(BlueBrick())
-    grid[3][4].add_brick(RedBrick())
+    #grid[3][3].add_brick(BlueBrick())
+    #grid[3][4].add_brick(RedBrick())
     grid[3][5].add_brick(GreenBrick())
     grid[3][6].add_brick(BlueBrick())
+    grid[7][1].add_brick(GreenBrick())
     grid[ball.x_pos][ball.y_pos].add_ball(ball)
-    ball.update_velo(1, 1)
+    ball.update_velo(-1, -1)
     move()
