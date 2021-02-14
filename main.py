@@ -15,24 +15,32 @@ def initialize(x, y):
 
 
 def render():
+    print("Num Lives : ", ball.lives)
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
         print("")
     print("Ball Cur X Pos: ", ball.x_pos, "\nCur Y Pos: ", ball.y_pos)
     print("Ball Cur X Vel: ", ball.x_vel, "\nCur Y Vel: ", ball.y_vel)
-
 def move():
     while True:
         cur_x, cur_y = ball.x_pos, ball.y_pos
         new_x, new_y = ball.x_pos + ball.x_vel, ball.y_pos + ball.y_vel
-        if new_x == len(grid):
-            new_x = len(grid)-1
-            ball.update_velo(-ball.x_vel, ball.y_vel)
+        if new_x >= len(grid)-1:
+            if ball.lives < 1 :
+                system("clear")
+                print("GAME OVER")
+                break
+            ball.decrease_life()
+            ball.update_position(5, 5)
+            ball.update_velo(-1, 1)
+            grid[cur_x][cur_y].remove_ball()
+            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            continue
         if new_x == 0:
             new_x = 0
             ball.update_velo(-ball.x_vel, ball.y_vel)
-        if new_y == len(grid[0]):
+        if new_y >= len(grid[0])-1:
             new_y = len(grid[0])-1
             ball.update_velo(ball.x_vel, -ball.y_vel)
         if new_y == 0:
@@ -43,10 +51,10 @@ def move():
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
         system("clear")
         render()
-        time.sleep(2)
+        time.sleep(0.5)
 
 if __name__ == '__main__':
-    initialize(7, 12)
+    initialize(20, 30)
     grid[1][2].add_brick(BlueBrick())
     grid[1][3].add_brick(BlueBrick())
     grid[1][4].add_brick(RedBrick())
