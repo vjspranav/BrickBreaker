@@ -1,8 +1,11 @@
+import time
+from os import system
 from placeholder import Placeholder
 from brick import BlueBrick, RedBrick, GreenBrick
+from ball import Ball
 
 grid = []
-
+ball = Ball(5, 5)
 
 def initialize(x, y):
     global grid
@@ -16,24 +19,49 @@ def render():
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
         print("")
+    print("Ball Cur X Pos: ", ball.x_pos, "\nCur Y Pos: ", ball.y_pos)
+    print("Ball Cur X Vel: ", ball.x_vel, "\nCur Y Vel: ", ball.y_vel)
 
+def move():
+    while True:
+        cur_x, cur_y = ball.x_pos, ball.y_pos
+        new_x, new_y = ball.x_pos + ball.x_vel, ball.y_pos + ball.y_vel
+        if new_x == len(grid):
+            new_x = len(grid)-1
+            ball.update_velo(-ball.x_vel, ball.y_vel)
+        if new_x == 0:
+            new_x = 0
+            ball.update_velo(-ball.x_vel, ball.y_vel)
+        if new_y == len(grid[0]):
+            new_y = len(grid[0])-1
+            ball.update_velo(ball.x_vel, -ball.y_vel)
+        if new_y == 0:
+            new_y = 0
+            ball.update_velo(ball.x_vel, -ball.y_vel)
+        ball.update_position(new_x, new_y)
+        grid[cur_x][cur_y].remove_ball()
+        grid[ball.x_pos][ball.y_pos].add_ball(ball)
+        system("clear")
+        render()
+        time.sleep(2)
 
 if __name__ == '__main__':
-    initialize(5, 10)
-    grid[1][2] = BlueBrick()
-    grid[1][3] = BlueBrick()
-    grid[1][4] = RedBrick()
-    grid[1][5] = GreenBrick()
-    grid[1][6] = BlueBrick()
-    grid[1][7] = RedBrick()
-    grid[2][3] = RedBrick()
-    grid[2][4] = GreenBrick()
-    grid[2][5] = BlueBrick()
-    grid[2][6] = BlueBrick()
-    grid[3][2] = BlueBrick()
-    grid[3][3] = BlueBrick()
-    grid[3][4] = RedBrick()
-    grid[3][5] = GreenBrick()
-    grid[3][6] = BlueBrick()
-    grid[3][7] = RedBrick()
-    render()
+    initialize(7, 12)
+    grid[1][2].add_brick(BlueBrick())
+    grid[1][3].add_brick(BlueBrick())
+    grid[1][4].add_brick(RedBrick())
+    grid[1][5].add_brick(GreenBrick())
+    grid[1][6].add_brick(BlueBrick())
+    grid[1][7].add_brick(RedBrick())
+    grid[2][3].add_brick(RedBrick())
+    grid[2][4].add_brick(GreenBrick())
+    grid[2][5].add_brick(BlueBrick())
+    grid[2][6].add_brick(BlueBrick())
+    grid[3][2].add_brick(BlueBrick())
+    grid[3][3].add_brick(BlueBrick())
+    grid[3][4].add_brick(RedBrick())
+    grid[3][5].add_brick(GreenBrick())
+    grid[3][6].add_brick(BlueBrick())
+    grid[ball.x_pos][ball.y_pos].add_ball(ball)
+    ball.update_velo(1, 1)
+    move()
