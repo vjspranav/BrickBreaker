@@ -53,12 +53,21 @@ def move():
         if grid[new_x][new_y].has_brick:
             if abs(new_x - cur_x) == 1:
                 ball.update_velo(-ball.x_vel, ball.y_vel)
-            if abs(new_y - cur_y) < 0:
+            if abs(new_y - cur_y) == 1:
                 ball.update_velo(ball.x_vel, -ball.y_vel)
-            ball.update_position(new_x, new_y)
-            grid[cur_x][cur_y].remove_ball()
-            grid[new_x][new_y].add_ball(ball)
-            continue
+            #ball.update_position(new_x, new_y)
+            #grid[cur_x][cur_y].remove_ball()
+            #grid[new_x][new_y].add_ball(ball)
+            #continue
+
+        if grid[cur_x][new_y].has_brick:
+            new_y=cur_y
+            new_x=cur_x
+            ball.update_velo(ball.x_vel, -ball.y_vel)
+            #ball.update_position(new_x, new_y)
+            #grid[cur_x][cur_y].remove_ball()
+            #grid[new_x][new_y].add_ball(ball)
+            #continue
 
         ball.update_position(new_x, new_y)
         grid[cur_x][cur_y].remove_ball()
