@@ -36,6 +36,10 @@ class Placeholder:
         self.has_ball = False
         self.ball = None
 
+    def collide(self):
+        if self.has_brick:
+            self.remove_object()
+    
     def __str__(self):
         if self.has_ball:
             return str(self.ball)
