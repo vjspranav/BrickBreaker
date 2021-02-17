@@ -6,7 +6,7 @@ from brick import BlueBrick, RedBrick, GreenBrick
 from ball import Ball
 
 grid = []
-ball = Ball(5, 5)
+ball = Ball(8, 8)
 
 
 def has_bricks(points):
@@ -66,29 +66,32 @@ def move():
         if new_x == 0:
             new_x = 0
             ball.update_velo(-ball.x_vel, ball.y_vel)
-            ball.update_position(new_x, new_y)
-            grid[cur_x][cur_y].remove_ball()
-            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            # ball.update_position(new_x, cur_y)
+            # grid[cur_x][cur_y].remove_ball()
+            # grid[ball.x_pos][ball.y_pos].add_ball(ball)
             time.sleep(0.5)
             continue
         if new_y >= len(grid[0]) - 1:
             new_y = len(grid[0]) - 1
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            ball.update_position(new_x, new_y)
-            grid[cur_x][cur_y].remove_ball()
-            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            # ball.update_position(cur_x, new_y)
+            # grid[cur_x][cur_y].remove_ball()
+            # grid[ball.x_pos][ball.y_pos].add_ball(ball)
             time.sleep(0.5)
             continue
         if new_y == 0:
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            ball.update_position(new_x, new_y)
-            grid[cur_x][cur_y].remove_ball()
-            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            # ball.update_position(cur_x, new_y)
+            # grid[cur_x][cur_y].remove_ball()
+            # grid[ball.x_pos][ball.y_pos].add_ball(ball)
             time.sleep(0.5)
             continue
 
         # Getting Points that have bricks
-        m = (new_y - cur_y) / (new_x - cur_x)
+        try:
+            m = (new_y - cur_y) / (new_x - cur_x)
+        except:
+            m = 0
         points_with_bricks = points_in_line(cur_x, cur_y, new_x, new_y)
         points_with_bricks = has_bricks(points_with_bricks)
         if len(points_with_bricks) > 1:
@@ -256,5 +259,5 @@ if __name__ == '__main__':
     grid[3][6].add_brick(BlueBrick())
     grid[7][1].add_brick(GreenBrick())
     grid[ball.x_pos][ball.y_pos].add_ball(ball)
-    ball.update_velo(-1, -1)
+    ball.update_velo(-1, 1)
     move()
