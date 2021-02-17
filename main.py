@@ -1,12 +1,16 @@
 import time
-from geometry import return_closest_point, points_in_line
+from get import getch
 from os import system
+from geometry import return_closest_point, points_in_line
 from placeholder import Placeholder
+from paddle import Paddle
 from brick import BlueBrick, RedBrick, GreenBrick
 from ball import Ball
 
 grid = []
 ball = Ball(8, 8)
+paddle = [Paddle(0, 14, 10), Paddle(1, 14, 11), Paddle(2, 14, 12)]
+curNumPaddles = 3
 
 
 def has_bricks(points):
@@ -106,7 +110,7 @@ def move():
         if len(points_with_bricks) > 1:
             p = return_closest_point(cur_x, cur_y, points_with_bricks)
 
-        #st=""
+        # st=""
 
         # Handling brick collision
         if p:
@@ -116,8 +120,8 @@ def move():
             brick_y = p[1]
             if vel_y > 0 and vel_x > 0:
                 if m == 1:
-                    new_x = brick_x-1
-                    new_y = brick_y-1
+                    new_x = brick_x - 1
+                    new_y = brick_y - 1
                     # Checking if vertical or horizontal blocks exist
                     if grid[brick_x][brick_y - 1].has_brick:
                         brick_y = brick_y - 1
@@ -139,7 +143,7 @@ def move():
                 if m == -1:
                     new_x = brick_x + 1
                     new_y = brick_y - 1
-                    if grid[brick_x][brick_y-1].has_brick:
+                    if grid[brick_x][brick_y - 1].has_brick:
                         brick_y = brick_y - 1
                         ball.update_velo(-ball.x_vel, ball.y_vel)
                     elif grid[brick_x + 1][brick_y].has_brick:
@@ -185,7 +189,7 @@ def move():
                     if grid[brick_x][brick_y + 1].has_brick:
                         brick_y = brick_y + 1
                         ball.update_velo(-ball.x_vel, ball.y_vel)
-                    elif grid[brick_x+1][brick_y]:
+                    elif grid[brick_x + 1][brick_y]:
                         brick_x = brick_x + 1
                         ball.update_velo(ball.x_vel, -ball.y_vel)
                     else:
@@ -204,8 +208,8 @@ def move():
             grid[cur_x][cur_y].remove_ball()
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
             grid[brick_x][brick_y].collide()
-            #time.sleep(2)
-            #continue
+            # time.sleep(2)
+            # continue
         # Handling bricks
         # if grid[new_x][new_y].has_brick:
         #     grid[new_x][new_y].collide()
@@ -235,29 +239,51 @@ def move():
         # print("Ball New X Pos: ", new_x, "\nNew Y Pos: ", new_y)
         # print(points_with_bricks)
         # print(points_with_bricks1)
-        #print(st)
+        # print(st)
         print("Closest Brick: ", p)
         time.sleep(0.5)
 
 
+def inp():
+    while True:
+        dir = getch()
+        if dir == "a" or dir == "A":
+            if (paddle[0].y > 0):
+                for i in range(len(paddle)):
+                    grid[paddle[i].x][paddle[i].y].remove_paddle()
+                    paddle[i].update_y(paddle[i].y - 1)
+        if dir == "d" or dir == "D":
+            if paddle[len(paddle)-1].y < len(grid[0])-1:
+                for i in range(len(paddle)):
+                    grid[paddle[i].x][paddle[i].y].remove_paddle()
+                    paddle[i].update_y(paddle[i].y + 1)
+        for i in range(len(paddle)):
+            grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
+        #system("clear")
+        #render()
+        #print(dir)
+
 if __name__ == '__main__':
     initialize(15, 20)
-    grid[1][2].add_brick(BlueBrick())
-    grid[1][3].add_brick(BlueBrick())
-    grid[1][4].add_brick(RedBrick())
-    grid[1][5].add_brick(GreenBrick())
-    grid[1][6].add_brick(BlueBrick())
-    grid[1][7].add_brick(RedBrick())
-    grid[2][3].add_brick(RedBrick())
-    grid[2][4].add_brick(GreenBrick())
-    grid[2][5].add_brick(BlueBrick())
-    grid[2][6].add_brick(BlueBrick())
-    grid[3][2].add_brick(BlueBrick())
-    grid[3][3].add_brick(BlueBrick())
-    grid[3][4].add_brick(RedBrick())
-    grid[3][5].add_brick(GreenBrick())
-    grid[3][6].add_brick(BlueBrick())
-    grid[7][1].add_brick(GreenBrick())
-    grid[ball.x_pos][ball.y_pos].add_ball(ball)
-    ball.update_velo(-1, 1)
-    move()
+    # grid[1][2].add_brick(BlueBrick())
+    # grid[1][3].add_brick(BlueBrick())
+    # grid[1][4].add_brick(RedBrick())
+    # grid[1][5].add_brick(GreenBrick())
+    # grid[1][6].add_brick(BlueBrick())
+    # grid[1][7].add_brick(RedBrick())
+    # grid[2][3].add_brick(RedBrick())
+    # grid[2][4].add_brick(GreenBrick())
+    # grid[2][5].add_brick(BlueBrick())
+    # grid[2][6].add_brick(BlueBrick())
+    # grid[3][2].add_brick(BlueBrick())
+    # grid[3][3].add_brick(BlueBrick())
+    # grid[3][4].add_brick(RedBrick())
+    # grid[3][5].add_brick(GreenBrick())
+    # grid[3][6].add_brick(BlueBrick())
+    # grid[7][1].add_brick(GreenBrick())
+    # grid[ball.x_pos][ball.y_pos].add_ball(ball)
+    grid[paddle[0].x][paddle[0].y].add_paddle(paddle)
+    grid[paddle[1].x][paddle[1].y].add_paddle(paddle)
+    grid[paddle[2].x][paddle[2].y].add_paddle(paddle)
+    inp()
+    print("Hello World")

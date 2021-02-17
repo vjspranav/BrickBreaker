@@ -7,10 +7,12 @@ class Placeholder:
     def __init__(self):
         self.object = None
         self.ball = None
+        self.paddle = None
         self.has_object = False
         self.has_brick = False
         self.has_power_up = False
         self.has_ball = False
+        self.has_paddle = False
 
     def add_brick(self, obj):
         self.object = obj
@@ -32,9 +34,18 @@ class Placeholder:
         self.has_brick = False
         self.has_power_up = False
 
+    def add_paddle(self, obj):
+        self.paddle = obj
+        self.has_paddle = True
+
     def remove_ball(self):
         self.has_ball = False
         self.ball = None
+
+    def remove_paddle(self):
+        if self.has_paddle:
+            self.paddle = None
+            self.has_paddle = False
 
     def collide(self):
         if self.has_brick:
@@ -45,4 +56,6 @@ class Placeholder:
             return str(self.ball)
         if self.has_object:
             return str(self.object)
+        if self.has_paddle:
+            return str(self.paddle)
         return Back.LIGHTWHITE_EX + "  *  "
