@@ -1,5 +1,6 @@
 import time
 import threading
+import sys
 from get import getch
 from os import system
 from geometry import return_closest_point, points_in_line
@@ -241,13 +242,13 @@ def move():
         # print(points_with_bricks)
         # print(points_with_bricks1)
         # print(st)
-        print("Closest Brick: ", p)
         time.sleep(0.5)
 
 
 def inp():
     while True:
         dir = getch()
+        # dir = sys.stdin.read(1)
         if dir == "a" or dir == "A":
             if (paddle[0].y > 0):
                 for i in range(len(paddle)):
@@ -260,12 +261,9 @@ def inp():
                     paddle[i].update_y(paddle[i].y + 1)
         for i in range(len(paddle)):
             grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
-        #system("clear")
-        #render()
-        #print(dir)
 
 if __name__ == '__main__':
-    initialize(15, 20)
+    initialize(15, 17)
     grid[1][2].add_brick(BlueBrick())
     grid[1][3].add_brick(BlueBrick())
     grid[1][4].add_brick(RedBrick())
@@ -287,8 +285,8 @@ if __name__ == '__main__':
     grid[paddle[1].x][paddle[1].y].add_paddle(paddle[1])
     grid[paddle[2].x][paddle[2].y].add_paddle(paddle[2])
     ball.update_velo(-1, -1)
-    t1 = threading.Thread(target=move)
+    t1 = threading.Thread(target=inp)
     t1.start()
-    inp()
+    move()
     t1.join()
     print("Hello World")
