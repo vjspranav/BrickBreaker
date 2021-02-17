@@ -57,22 +57,34 @@ def move():
                 break
             ball.decrease_life()
             ball.update_position(4, 4)
-            ball.update_velo(-1, 2)
+            ball.update_velo(-1, 1)
             grid[cur_x][cur_y].remove_ball()
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            time.sleep(0.5)
             continue
 
         if new_x == 0:
             new_x = 0
             ball.update_velo(-ball.x_vel, ball.y_vel)
+            ball.update_position(new_x, new_y)
+            grid[cur_x][cur_y].remove_ball()
+            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            time.sleep(0.5)
             continue
         if new_y >= len(grid[0]) - 1:
             new_y = len(grid[0]) - 1
             ball.update_velo(ball.x_vel, -ball.y_vel)
+            ball.update_position(new_x, new_y)
+            grid[cur_x][cur_y].remove_ball()
+            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            time.sleep(0.5)
             continue
         if new_y == 0:
-            new_y = 0
             ball.update_velo(ball.x_vel, -ball.y_vel)
+            ball.update_position(new_x, new_y)
+            grid[cur_x][cur_y].remove_ball()
+            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            time.sleep(0.5)
             continue
 
         # Getting Points that have bricks
@@ -91,7 +103,7 @@ def move():
         if len(points_with_bricks) > 1:
             p = return_closest_point(cur_x, cur_y, points_with_bricks)
 
-        st=""
+        #st=""
 
         # Handling brick collision
         if p:
@@ -103,7 +115,15 @@ def move():
                 if m == 1:
                     new_x = brick_x-1
                     new_y = brick_y-1
-                    ball.update_velo(-ball.x_vel, -ball.y_vel)
+                    # Checking if vertical or horizontal blocks exist
+                    if grid[brick_x][brick_y - 1].has_brick:
+                        brick_y = brick_y - 1
+                        ball.update_velo(-ball.x_vel, ball.y_vel)
+                    elif grid[brick_x - 1][brick_y].has_brick:
+                        brick_x = brick_x - 1
+                        ball.update_velo(ball.x_vel, -ball.y_vel)
+                    else:
+                        ball.update_velo(-ball.x_vel, -ball.y_vel)
                 if m < 1:
                     new_x = brick_x
                     new_y = brick_y - 1
@@ -112,12 +132,18 @@ def move():
                     new_x = brick_x - 1
                     new_y = brick_y
                     ball.update_velo(-ball.x_vel, ball.y_vel)
-
             elif vel_y > 0 and vel_x < 0:
                 if m == -1:
                     new_x = brick_x + 1
                     new_y = brick_y - 1
-                    ball.update_velo(-ball.x_vel, -ball.y_vel)
+                    if grid[brick_x][brick_y-1].has_brick:
+                        brick_y = brick_y - 1
+                        ball.update_velo(-ball.x_vel, ball.y_vel)
+                    elif grid[brick_x + 1][brick_y].has_brick:
+                        brick_x = brick_x + 1
+                        ball.update_velo(ball.x_vel, -ball.y_vel)
+                    else:
+                        ball.update_velo(-ball.x_vel, -ball.y_vel)
                 if m < -1:
                     new_x = brick_y - 1
                     new_y = brick_x
@@ -131,7 +157,14 @@ def move():
                 if m == -1:
                     new_x = brick_x - 1
                     new_y = brick_y + 1
-                    ball.update_velo(-ball.x_vel, -ball.y_vel)
+                    if grid[brick_x][brick_y + 1].has_brick:
+                        brick_y = brick_y + 1
+                        ball.update_velo(-ball.x_vel, ball.y_vel)
+                    elif grid[brick_x - 1][brick_y].has_brick:
+                        brick_x = brick_x - 1
+                        ball.update_velo(ball.x_vel, -ball.y_vel)
+                    else:
+                        ball.update_velo(-ball.x_vel, -ball.y_vel)
                 if m > -1:
                     new_x = brick_x
                     new_y = brick_y + 1
@@ -146,7 +179,14 @@ def move():
                 if m == 1:
                     new_x = brick_x + 1
                     new_y = brick_y + 1
-                    ball.update_velo(-ball.x_vel, -ball.y_vel)
+                    if grid[brick_x][brick_y + 1].has_brick:
+                        brick_y = brick_y + 1
+                        ball.update_velo(-ball.x_vel, ball.y_vel)
+                    elif grid[brick_x+1][brick_y]:
+                        brick_x = brick_x + 1
+                        ball.update_velo(ball.x_vel, -ball.y_vel)
+                    else:
+                        ball.update_velo(-ball.x_vel, -ball.y_vel)
                 if m > 1:
                     new_x = brick_x
                     new_y = brick_y + 1
@@ -161,7 +201,8 @@ def move():
             grid[cur_x][cur_y].remove_ball()
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
             grid[brick_x][brick_y].collide()
-            continue
+            #time.sleep(2)
+            #continue
         # Handling bricks
         # if grid[new_x][new_y].has_brick:
         #     grid[new_x][new_y].collide()
@@ -191,7 +232,7 @@ def move():
         # print("Ball New X Pos: ", new_x, "\nNew Y Pos: ", new_y)
         # print(points_with_bricks)
         # print(points_with_bricks1)
-        print(st)
+        #print(st)
         print("Closest Brick: ", p)
         time.sleep(0.5)
 
@@ -215,5 +256,5 @@ if __name__ == '__main__':
     grid[3][6].add_brick(BlueBrick())
     grid[7][1].add_brick(GreenBrick())
     grid[ball.x_pos][ball.y_pos].add_ball(ball)
-    ball.update_velo(-3, 4)
+    ball.update_velo(-1, -1)
     move()
