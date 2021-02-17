@@ -5,13 +5,10 @@ def __closest_node(node, nodes):
     nodes = np.asarray(nodes)
     deltas = nodes - node
     dist_2 = np.einsum('ij,ij->i', deltas, deltas)
-    print(dist_2)
-    print(np.argsort(dist_2))
-    print(dist_2)
-    return np.argsort(dist_2)
+    return np.argmin(dist_2)
 
 
-def return_closes_point(x1, y1, points):
+def return_closest_point(x1, y1, points):
     return points[__closest_node((x1, y1), points)]
 
 
@@ -43,4 +40,3 @@ def points_in_line(x0, y0, x1, y1):
             y += sy
     points_in_line.append((x, y))
     return points_in_line
-
