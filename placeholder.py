@@ -52,6 +52,9 @@ class Placeholder:
             self.object.collide()
             if self.object.num_lives <= 0:
                 self.remove_object()
+                return 1
+            return 1
+        return 0
     
     def __str__(self):
         if self.has_ball:

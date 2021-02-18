@@ -13,7 +13,7 @@ grid = []
 ball = Ball(8, 8)
 paddle = [Paddle(0, 14, 10), Paddle(1, 14, 11), Paddle(2, 14, 12)]
 curNumPaddles = 3
-
+score = 0
 
 def has_bricks(points):
     req_points = []
@@ -31,16 +31,17 @@ def initialize(x, y):
 
 
 def render():
-    print("Num Lives : ", ball.lives)
+    print("Num Lives : ", ball.lives, "\tCur Score : ", score)
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
         print("")
-    print("Ball Cur X Pos: ", ball.x_pos, "\nCur Y Pos: ", ball.y_pos)
-    print("Ball Cur X Vel: ", ball.x_vel, "\nCur Y Vel: ", ball.y_vel)
+    #print("Ball Cur X Pos: ", ball.x_pos, "\nCur Y Pos: ", ball.y_pos)
+    #print("Ball Cur X Vel: ", ball.x_vel, "\nCur Y Vel: ", ball.y_vel)
 
 
 def move():
+    global score
     while True:
         cur_x, cur_y = ball.x_pos, ball.y_pos
         new_x, new_y = ball.x_pos + ball.x_vel, ball.y_pos + ball.y_vel
@@ -202,7 +203,8 @@ def move():
             ball.update_position(new_x, new_y)
             grid[cur_x][cur_y].remove_ball()
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
-            grid[brick_x][brick_y].collide()
+            cur_point=grid[brick_x][brick_y].collide()
+            score += cur_point
 
         ball.update_position(new_x, new_y)
         grid[cur_x][cur_y].remove_ball()
