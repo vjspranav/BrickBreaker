@@ -6,7 +6,7 @@ from os import system
 from geometry import return_closest_point, points_in_line
 from placeholder import Placeholder
 from paddle import Paddle
-from brick import BlueBrick, RedBrick, GreenBrick
+from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick
 from ball import Ball
 
 grid = []
@@ -244,11 +244,12 @@ if __name__ == '__main__':
     grid[2][4].add_brick(GreenBrick())
     grid[2][5].add_brick(BlueBrick())
     grid[2][6].add_brick(BlueBrick())
+    grid[2][6].add_brick(InvicibleBrick())
     grid[3][2].add_brick(BlueBrick())
     grid[3][3].add_brick(BlueBrick())
     grid[3][4].add_brick(RedBrick())
     grid[3][5].add_brick(GreenBrick())
-    grid[3][6].add_brick(BlueBrick())
+    grid[3][6].add_brick(InvicibleBrick())
     grid[7][1].add_brick(GreenBrick())
     grid[ball.x_pos][ball.y_pos].add_ball(ball)
     grid[paddle[0].x][paddle[0].y].add_paddle(paddle[0])

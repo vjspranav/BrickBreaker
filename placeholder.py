@@ -50,9 +50,11 @@ class Placeholder:
     def collide(self):
         if self.has_brick:
             self.object.collide()
-            if self.object.num_lives <= 0:
+            if self.object.num_lives == 0:
                 self.remove_object()
                 return 1
+            if self.object.num_lives == -1:
+                return 0
             return 1
         return 0
     

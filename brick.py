@@ -4,13 +4,15 @@ init(autoreset=True)
 bg_color = {
     "red": Back.RED,
     "green": Back.GREEN,
-    "blue": Back.BLUE
+    "blue": Back.BLUE,
+    "gray": Back.LIGHTBLACK_EX
 }
 
 fg_color = {
     "red": Back.RED,
     "green": Back.GREEN,
-    "blue": Back.BLUE
+    "blue": Back.BLUE,
+    "gray": Back.LIGHTBLACK_EX
 }
 
 
@@ -20,7 +22,8 @@ class _Brick:
         self.num_lives = num_lives
 
     def collide(self):
-        self.num_lives -= 1
+        if self.num_lives != -1:
+            self.num_lives -= 1
         if self.num_lives == 2:
             self.color = "blue"
         if self.num_lives == 1:
@@ -45,3 +48,7 @@ class BlueBrick(_Brick):
 class GreenBrick(_Brick):
     def __init__(self):
         super().__init__("green", 1)
+
+class InvicibleBrick(_Brick):
+    def __init__(self):
+        super().__init__("gray", -1)
