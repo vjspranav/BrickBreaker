@@ -57,7 +57,7 @@ def move():
 
         # Handling walls
         if new_x >= len(grid) - 1:
-            new_x = len(grid)-1
+            new_x = len(grid) - 1
             if grid[new_x][new_y].has_paddle or grid[ball.x_pos + 1][ball.y_pos].has_paddle:
                 ball.update_velo(-ball.x_vel, ball.y_vel)
                 continue
@@ -76,24 +76,15 @@ def move():
         if new_x == 0:
             new_x = 0
             ball.update_velo(-ball.x_vel, ball.y_vel)
-            # ball.update_position(new_x, cur_y)
-            # grid[cur_x][cur_y].remove_ball()
-            # grid[ball.x_pos][ball.y_pos].add_ball(ball)
             time.sleep(0.5)
             continue
         if new_y >= len(grid[0]) - 1:
             new_y = len(grid[0]) - 1
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            # ball.update_position(cur_x, new_y)
-            # grid[cur_x][cur_y].remove_ball()
-            # grid[ball.x_pos][ball.y_pos].add_ball(ball)
             time.sleep(0.5)
             continue
         if new_y == 0:
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            # ball.update_position(cur_x, new_y)
-            # grid[cur_x][cur_y].remove_ball()
-            # grid[ball.x_pos][ball.y_pos].add_ball(ball)
             time.sleep(0.5)
             continue
 
@@ -115,8 +106,6 @@ def move():
 
         if len(points_with_bricks) > 1:
             p = return_closest_point(cur_x, cur_y, points_with_bricks)
-
-        # st=""
 
         # Handling brick collision
         if p:
@@ -214,38 +203,12 @@ def move():
             grid[cur_x][cur_y].remove_ball()
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
             grid[brick_x][brick_y].collide()
-            # time.sleep(2)
-            # continue
-        # Handling bricks
-        # if grid[new_x][new_y].has_brick:
-        #     grid[new_x][new_y].collide()
-        #     new_y = cur_y
-        #     if abs(new_x - cur_x) == 1:
-        #         ball.update_velo(-ball.x_vel, ball.y_vel)
-        #     ball.update_position(new_x, new_y)
-        #     grid[cur_x][cur_y].remove_ball()
-        #     grid[new_x][new_y].add_ball(ball)
-        #     continue
-        #
-        # if grid[cur_x][new_y].has_brick:
-        #     grid[cur_x][new_y].collide()
-        #     new_x = cur_x
-        #     ball.update_velo(ball.x_vel, -ball.y_vel)
-        #     ball.update_position(new_x, new_y)
-        #     grid[cur_x][cur_y].remove_ball()
-        #     grid[new_x][new_y].add_ball(ball)
-        #     continue
 
         ball.update_position(new_x, new_y)
         grid[cur_x][cur_y].remove_ball()
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
         system("clear")
         render()
-        # print("Ball Cur X Pos: ", cur_x, "\nCur Y Pos: ", cur_y)
-        # print("Ball New X Pos: ", new_x, "\nNew Y Pos: ", new_y)
-        # print(points_with_bricks)
-        # print(points_with_bricks1)
-        # print(st)
         time.sleep(0.5)
 
 
@@ -259,12 +222,13 @@ def inp():
                     grid[paddle[i].x][paddle[i].y].remove_paddle()
                     paddle[i].update_y(paddle[i].y - 1)
         if dir == "d" or dir == "D":
-            if paddle[len(paddle)-1].y < len(grid[0])-1:
+            if paddle[len(paddle) - 1].y < len(grid[0]) - 1:
                 for i in range(len(paddle)):
                     grid[paddle[i].x][paddle[i].y].remove_paddle()
                     paddle[i].update_y(paddle[i].y + 1)
         for i in range(len(paddle)):
             grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
+
 
 if __name__ == '__main__':
     initialize(15, 17)

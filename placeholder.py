@@ -49,7 +49,9 @@ class Placeholder:
 
     def collide(self):
         if self.has_brick:
-            self.remove_object()
+            self.object.collide()
+            if self.object.num_lives <= 0:
+                self.remove_object()
     
     def __str__(self):
         if self.has_ball:

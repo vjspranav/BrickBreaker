@@ -19,6 +19,15 @@ class _Brick:
         self.color = color
         self.num_lives = num_lives
 
+    def collide(self):
+        self.num_lives -= 1
+        if self.num_lives == 2:
+            self.color = "blue"
+        if self.num_lives == 1:
+            self.color = "green"
+        if self.num_lives == 0:
+            return None
+
     def __str__(self):
         return bg_color[self.color] + "|___|"
 
