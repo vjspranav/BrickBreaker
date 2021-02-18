@@ -57,6 +57,10 @@ def move():
 
         # Handling walls
         if new_x >= len(grid) - 1:
+            new_x = len(grid)-1
+            if grid[new_x][new_y].has_paddle or grid[ball.x_pos + 1][ball.y_pos].has_paddle:
+                ball.update_velo(-ball.x_vel, ball.y_vel)
+                continue
             if ball.lives < 1:
                 system("clear")
                 print("GAME OVER")
