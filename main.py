@@ -13,7 +13,6 @@ paddle = [Paddle(0, 14, 10), Paddle(1, 14, 11), Paddle(2, 14, 12)]
 ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
-is_colliding = False
 
 
 def has_bricks(points):
@@ -70,13 +69,10 @@ def render():
                 if grid[i][j].get_object().num_lives > 0:
                     num_bricks += 1
         print("")
-    # print("Ball Cur X Pos: ", ball.x_pos, "\nCur Y Pos: ", ball.y_pos)
-    # print("Ball Cur X Vel: ", ball.x_vel, "\nCur Y Vel: ", ball.y_vel)
 
 
 def move():
     global score
-    is_colliding = False
     while True:
         if is_attached:
             system("clear")
@@ -150,17 +146,11 @@ def move():
         if new_x == 0:
             new_x = 0
             ball.update_velo(-ball.x_vel, ball.y_vel)
-            # time.sleep(0.5)
-            # continue
         if new_y >= len(grid[0]) - 1:
             new_y = len(grid[0]) - 1
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            # time.sleep(0.5)
-            # continue
         if new_y == 0:
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            # time.sleep(0.5)
-            # continue
 
         # Getting Points that have bricks
         try:
@@ -183,7 +173,6 @@ def move():
 
         # Handling brick collision
         if p:
-            is_colliding = True
             vel_x = ball.x_vel
             vel_y = ball.y_vel
             brick_x = p[0]
