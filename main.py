@@ -1,6 +1,5 @@
 import time
 import threading
-import sys
 from get import getch
 from os import system
 from geometry import return_closest_point, points_in_line
@@ -102,7 +101,7 @@ def move():
                     points_with_bricks.remove(points_with_bricks[i])
 
         p = 0
-        if len(points_with_bricks) > 0:
+        if len(points_with_bricks) == 1:
             p = points_with_bricks[0]
 
         if len(points_with_bricks) > 1:
@@ -185,7 +184,7 @@ def move():
                     if grid[brick_x][brick_y + 1].has_brick:
                         brick_y = brick_y + 1
                         ball.update_velo(-ball.x_vel, ball.y_vel)
-                    elif grid[brick_x + 1][brick_y]:
+                    elif grid[brick_x + 1][brick_y].has_brick:
                         brick_x = brick_x + 1
                         ball.update_velo(ball.x_vel, -ball.y_vel)
                     else:
