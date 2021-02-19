@@ -34,6 +34,9 @@ def destroy(x, y):
         elif grid[x][y].get_object().num_lives == -1:
             score += 1
         grid[x][y].remove_object()
+        system("clear")
+        render()
+        time.sleep(0.1)
 
 def bombard(x, y):
     grid[x][y].remove_object()
