@@ -65,8 +65,41 @@ def move():
         if new_x >= len(grid) - 1:
             new_x = len(grid) - 1
             if grid[new_x][new_y].has_paddle or grid[ball.x_pos + 1][ball.y_pos].has_paddle:
-                ball.update_velo(-ball.x_vel, ball.y_vel)
+                if not grid[new_x][new_y].has_paddle:
+                    new_x = ball.x_pos + 1
+                    new_y = ball.y_pos
+                p_no = grid[new_x][new_y].get_paddle().number
+
+                # VAriable velocity and deflection works!!
+                if p_no < round(len(paddle)/2) - 1:
+                    if ball.y_vel > 0:
+                        new_vel_x = -ball.x_vel
+                        new_vel_y = -ball.y_vel #+1
+                    else:
+                        new_vel_x = -ball.x_vel
+                        new_vel_y = ball.y_vel #-1
+                elif p_no == round(len(paddle)/2) - 1:
+                    new_vel_x = -ball.x_vel
+                    new_vel_y = -ball.y_vel
+                else:
+                    if ball.y_vel < 0:
+                        new_vel_x = -ball.x_vel
+                        new_vel_y = -ball.y_vel #- 1
+                    else:
+                        new_vel_x = -ball.x_vel
+                        new_vel_y = ball.y_vel #+ 1
+
+                if new_vel_x > 3:
+                    new_vel_x = 3
+                if new_vel_y > 3:
+                    new_vel_y = 3
+                if new_vel_x < -3:
+                    new_vel_x = -3
+                if new_vel_y < -3:
+                    new_vel_y = -3
+                ball.update_velo(new_vel_x, new_vel_y)
                 continue
+
             if ball.lives < 1:
                 system("clear")
                 print("GAME OVER")

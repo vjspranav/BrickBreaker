@@ -38,6 +38,12 @@ class Placeholder:
         self.paddle = obj
         self.has_paddle = True
 
+    def get_object(self):
+        return self.object
+
+    def get_paddle(self):
+        return self.paddle
+
     def remove_ball(self):
         self.has_ball = False
         self.ball = None
