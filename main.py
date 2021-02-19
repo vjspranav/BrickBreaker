@@ -15,6 +15,7 @@ curNumPaddles, score = 3, 0
 is_attached = True
 is_colliding = False
 
+
 def has_bricks(points):
     req_points = []
     for point in points:
@@ -29,7 +30,7 @@ def destroy(x, y):
         if grid[x][y].get_object().num_lives > 0:
             score += grid[x][y].get_object().num_lives
         elif grid[x][y].get_object().num_lives == -2:
-            score+=1
+            score += 1
             bombard(x, y)
         elif grid[x][y].get_object().num_lives == -1:
             score += 1
@@ -38,16 +39,18 @@ def destroy(x, y):
         render()
         time.sleep(0.1)
 
+
 def bombard(x, y):
     grid[x][y].remove_object()
-    destroy(x, y-1)
-    destroy(x-1, y-1)
-    destroy(x-1, y)
-    destroy(x-1, y+1)
-    destroy(x, y+1)
-    destroy(x+1, y + 1)
-    destroy(x+1, y)
-    destroy(x+1, y - 1)
+    destroy(x, y - 1)
+    destroy(x - 1, y - 1)
+    destroy(x - 1, y)
+    destroy(x - 1, y + 1)
+    destroy(x, y + 1)
+    destroy(x + 1, y + 1)
+    destroy(x + 1, y)
+    destroy(x + 1, y - 1)
+
 
 def initialize(x, y):
     global grid
@@ -55,15 +58,20 @@ def initialize(x, y):
         for j in range(y):
             grid = [[Placeholder() for j in range(y)] for i in range(x)]
 
-
+num_bricks=1
 def render():
+    global num_bricks
+    num_bricks = 0
     print("Num Lives : ", ball.lives, "\tCur Score : ", score)
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
+            if grid[i][j].has_brick:
+                if grid[i][j].get_object().num_lives > 0:
+                    num_bricks += 1
         print("")
-    #print("Ball Cur X Pos: ", ball.x_pos, "\nCur Y Pos: ", ball.y_pos)
-    #print("Ball Cur X Vel: ", ball.x_vel, "\nCur Y Vel: ", ball.y_vel)
+    # print("Ball Cur X Pos: ", ball.x_pos, "\nCur Y Pos: ", ball.y_pos)
+    # print("Ball Cur X Vel: ", ball.x_vel, "\nCur Y Vel: ", ball.y_vel)
 
 
 def move():
@@ -98,23 +106,23 @@ def move():
                 p_no = grid[new_x][new_y].get_paddle().number
 
                 # VAriable velocity and deflection works!!
-                if p_no < round(len(paddle)/2) - 1:
+                if p_no < round(len(paddle) / 2) - 1:
                     if ball.y_vel > 0:
                         new_vel_x = -ball.x_vel
-                        new_vel_y = -ball.y_vel #+1
+                        new_vel_y = -ball.y_vel  # +1
                     else:
                         new_vel_x = -ball.x_vel
-                        new_vel_y = ball.y_vel #-1
-                elif p_no == round(len(paddle)/2) - 1:
+                        new_vel_y = ball.y_vel  # -1
+                elif p_no == round(len(paddle) / 2) - 1:
                     new_vel_x = -ball.x_vel
                     new_vel_y = -ball.y_vel
                 else:
                     if ball.y_vel < 0:
                         new_vel_x = -ball.x_vel
-                        new_vel_y = -ball.y_vel #- 1
+                        new_vel_y = -ball.y_vel  # - 1
                     else:
                         new_vel_x = -ball.x_vel
-                        new_vel_y = ball.y_vel #+ 1
+                        new_vel_y = ball.y_vel  # + 1
 
                 if new_vel_x > 3:
                     new_vel_x = 3
@@ -142,17 +150,17 @@ def move():
         if new_x == 0:
             new_x = 0
             ball.update_velo(-ball.x_vel, ball.y_vel)
-            #time.sleep(0.5)
-            #continue
+            # time.sleep(0.5)
+            # continue
         if new_y >= len(grid[0]) - 1:
             new_y = len(grid[0]) - 1
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            #time.sleep(0.5)
-            #continue
+            # time.sleep(0.5)
+            # continue
         if new_y == 0:
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            #time.sleep(0.5)
-            #continue
+            # time.sleep(0.5)
+            # continue
 
         # Getting Points that have bricks
         try:
@@ -266,14 +274,14 @@ def move():
                     new_y = brick_y
                     ball.update_velo(-ball.x_vel, ball.y_vel)
 
-#            if ball.y_vel > 0:
+            #            if ball.y_vel > 0:
 
             ball.update_position(new_x, new_y)
             grid[cur_x][cur_y].remove_ball()
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
             if grid[brick_x][brick_y].get_object().num_lives == -2:
                 bombard(brick_x, brick_y)
-            cur_point=grid[brick_x][brick_y].collide()
+            cur_point = grid[brick_x][brick_y].collide()
             score += cur_point
 
         ball.update_position(new_x, new_y)
@@ -281,13 +289,15 @@ def move():
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
         system("clear")
         render()
-        print("Is colliding: ", is_colliding)
+        if num_bricks <= 0:
+            break
         time.sleep(0.5)
 
 
 def inp():
+    global num_bricks
     global is_attached
-    while True:
+    while True and num_bricks > 0:
         dir = getch()
         # dir = sys.stdin.read(1)
         if dir == "a" or dir == "A":
@@ -308,11 +318,12 @@ def inp():
 
         if is_attached:
             grid[ball.x_pos][ball.y_pos].remove_ball()
-            ball.update_position(ball.x_pos, paddle[round(len(paddle)/2)-1].y)
+            ball.update_position(ball.x_pos, paddle[round(len(paddle) / 2) - 1].y)
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
 
         for i in range(len(paddle)):
             grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
+
 
 if __name__ == '__main__':
     initialize(15, 17)
@@ -347,3 +358,5 @@ if __name__ == '__main__':
     t1.start()
     move()
     t1.join()
+    system("clear")
+    print("Thank you for playing")
