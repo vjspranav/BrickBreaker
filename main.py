@@ -9,10 +9,10 @@ from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick
 from ball import Ball
 
 grid = []
-ball = Ball(8, 8)
 paddle = [Paddle(0, 14, 10), Paddle(1, 14, 11), Paddle(2, 14, 12)]
-curNumPaddles = 3
-score = 0
+ball = Ball(13, 11)
+curNumPaddles, score = 3, 0
+is_attached = True
 
 def has_bricks(points):
     req_points = []
@@ -41,7 +41,13 @@ def render():
 
 def move():
     global score
+
     while True:
+        if is_attached:
+            system("clear")
+            render()
+            time.sleep(0.5)
+            continue
         cur_x, cur_y = ball.x_pos, ball.y_pos
         new_x, new_y = ball.x_pos + ball.x_vel, ball.y_pos + ball.y_vel
 
@@ -214,6 +220,7 @@ def move():
 
 
 def inp():
+    global is_attached
     while True:
         dir = getch()
         # dir = sys.stdin.read(1)
@@ -227,9 +234,19 @@ def inp():
                 for i in range(len(paddle)):
                     grid[paddle[i].x][paddle[i].y].remove_paddle()
                     paddle[i].update_y(paddle[i].y + 1)
+        if dir == " ":
+            if is_attached:
+                ball.update_velo(-1, -1)
+                is_attached = False
+                continue
+
+        if is_attached:
+            grid[ball.x_pos][ball.y_pos].remove_ball()
+            ball.update_position(ball.x_pos, paddle[round(len(paddle)/2)-1].y)
+            grid[ball.x_pos][ball.y_pos].add_ball(ball)
+
         for i in range(len(paddle)):
             grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
-
 
 if __name__ == '__main__':
     initialize(15, 17)
@@ -254,7 +271,6 @@ if __name__ == '__main__':
     grid[paddle[0].x][paddle[0].y].add_paddle(paddle[0])
     grid[paddle[1].x][paddle[1].y].add_paddle(paddle[1])
     grid[paddle[2].x][paddle[2].y].add_paddle(paddle[2])
-    ball.update_velo(-1, -1)
     t1 = threading.Thread(target=inp)
     t1.start()
     move()
