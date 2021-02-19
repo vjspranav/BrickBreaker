@@ -5,7 +5,7 @@ from os import system
 from geometry import return_closest_point, points_in_line
 from placeholder import Placeholder
 from paddle import Paddle
-from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick
+from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick
 from ball import Ball
 
 grid = []
@@ -13,6 +13,7 @@ paddle = [Paddle(0, 14, 10), Paddle(1, 14, 11), Paddle(2, 14, 12)]
 ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
+is_colliding = False
 
 def has_bricks(points):
     req_points = []
@@ -21,6 +22,29 @@ def has_bricks(points):
             req_points.append(point)
     return req_points
 
+
+def destroy(x, y):
+    global score
+    if grid[x][y].has_brick:
+        if grid[x][y].get_object().num_lives > 0:
+            score += grid[x][y].get_object().num_lives
+        elif grid[x][y].get_object().num_lives == -2:
+            score+=1
+            bombard(x, y)
+        elif grid[x][y].get_object().num_lives == -1:
+            score += 1
+        grid[x][y].remove_object()
+
+def bombard(x, y):
+    grid[x][y].remove_object()
+    destroy(x, y-1)
+    destroy(x-1, y-1)
+    destroy(x-1, y)
+    destroy(x-1, y+1)
+    destroy(x, y+1)
+    destroy(x+1, y + 1)
+    destroy(x+1, y)
+    destroy(x+1, y - 1)
 
 def initialize(x, y):
     global grid
@@ -41,7 +65,7 @@ def render():
 
 def move():
     global score
-
+    is_colliding = False
     while True:
         if is_attached:
             system("clear")
@@ -115,17 +139,17 @@ def move():
         if new_x == 0:
             new_x = 0
             ball.update_velo(-ball.x_vel, ball.y_vel)
-            time.sleep(0.5)
-            continue
+            #time.sleep(0.5)
+            #continue
         if new_y >= len(grid[0]) - 1:
             new_y = len(grid[0]) - 1
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            time.sleep(0.5)
-            continue
+            #time.sleep(0.5)
+            #continue
         if new_y == 0:
             ball.update_velo(ball.x_vel, -ball.y_vel)
-            time.sleep(0.5)
-            continue
+            #time.sleep(0.5)
+            #continue
 
         # Getting Points that have bricks
         try:
@@ -148,6 +172,7 @@ def move():
 
         # Handling brick collision
         if p:
+            is_colliding = True
             vel_x = ball.x_vel
             vel_y = ball.y_vel
             brick_x = p[0]
@@ -238,9 +263,13 @@ def move():
                     new_y = brick_y
                     ball.update_velo(-ball.x_vel, ball.y_vel)
 
+#            if ball.y_vel > 0:
+
             ball.update_position(new_x, new_y)
             grid[cur_x][cur_y].remove_ball()
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
+            if grid[brick_x][brick_y].get_object().num_lives == -2:
+                bombard(brick_x, brick_y)
             cur_point=grid[brick_x][brick_y].collide()
             score += cur_point
 
@@ -249,6 +278,7 @@ def move():
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
         system("clear")
         render()
+        print("Is colliding: ", is_colliding)
         time.sleep(0.5)
 
 
@@ -294,11 +324,17 @@ if __name__ == '__main__':
     grid[2][5].add_brick(BlueBrick())
     grid[2][6].add_brick(BlueBrick())
     grid[2][6].add_brick(InvicibleBrick())
-    grid[3][2].add_brick(BlueBrick())
-    grid[3][3].add_brick(BlueBrick())
-    grid[3][4].add_brick(RedBrick())
-    grid[3][5].add_brick(GreenBrick())
-    grid[3][6].add_brick(InvicibleBrick())
+    grid[3][2].add_brick(BombBrick())
+    grid[3][3].add_brick(BombBrick())
+    grid[3][4].add_brick(BombBrick())
+    grid[3][5].add_brick(BombBrick())
+    grid[3][6].add_brick(BombBrick())
+    grid[3][2].add_brick(BombBrick())
+    grid[4][2].add_brick(BlueBrick())
+    grid[4][3].add_brick(BlueBrick())
+    grid[4][4].add_brick(RedBrick())
+    grid[4][5].add_brick(GreenBrick())
+    grid[4][6].add_brick(InvicibleBrick())
     grid[7][1].add_brick(GreenBrick())
     grid[ball.x_pos][ball.y_pos].add_ball(ball)
     grid[paddle[0].x][paddle[0].y].add_paddle(paddle[0])

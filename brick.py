@@ -5,14 +5,16 @@ bg_color = {
     "red": Back.RED,
     "green": Back.GREEN,
     "blue": Back.BLUE,
-    "gray": Back.LIGHTBLACK_EX
+    "gray": Back.LIGHTBLACK_EX,
+    "orange": Back.LIGHTRED_EX
 }
 
 fg_color = {
     "red": Back.RED,
     "green": Back.GREEN,
     "blue": Back.BLUE,
-    "gray": Back.LIGHTBLACK_EX
+    "gray": Back.LIGHTBLACK_EX,
+    "orange": Back.LIGHTRED_EX
 }
 
 
@@ -44,7 +46,6 @@ class BlueBrick(_Brick):
     def __init__(self):
         super().__init__("blue", 2)
 
-
 class GreenBrick(_Brick):
     def __init__(self):
         super().__init__("green", 1)
@@ -52,3 +53,7 @@ class GreenBrick(_Brick):
 class InvicibleBrick(_Brick):
     def __init__(self):
         super().__init__("gray", -1)
+
+class BombBrick(_Brick):
+    def __init__(self):
+        super().__init__("orange", -2)
