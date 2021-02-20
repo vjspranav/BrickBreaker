@@ -17,6 +17,84 @@ ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
 
+
+# Functions run in threads
+
+# Input for paddle control
+def inp():
+    global num_bricks
+    global is_attached
+    while True and num_bricks > 0:
+        # Catch what you can't fix
+        try:
+            dir = getch()
+            # dir = sys.stdin.read(1)
+            if dir == "a" or dir == "A":
+                if (paddle[0].y > 0):
+                    for i in range(len(paddle)):
+                        grid[paddle[i].x][paddle[i].y].remove_paddle()
+                        paddle[i].update_y(paddle[i].y - 1)
+            if dir == "d" or dir == "D":
+                if paddle[len(paddle) - 1].y < len(grid[0]) - 1:
+                    for i in range(len(paddle)):
+                        grid[paddle[i].x][paddle[i].y].remove_paddle()
+                        paddle[i].update_y(paddle[i].y + 1)
+            if dir == " ":
+                if is_attached:
+                    ball.update_velo(-1, -1)
+                    is_attached = False
+                    continue
+
+            if is_attached:
+                grid[ball.x_pos][ball.y_pos].remove_ball()
+                ball.update_position(ball.x_pos, paddle[round(len(paddle) / 2) - 1].y)
+                grid[ball.x_pos][ball.y_pos].add_ball(ball)
+
+            for i in range(len(paddle)):
+                grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
+        except:
+            continue
+
+# Activates power up on collision with paddle
+def activate_power_up(power_up):
+    timer = 0
+    # Expand
+    if power_up.number == 0:
+        if len(paddle) <= 3:
+            p4 = Paddle(4, 14, len(paddle))
+            p5 = Paddle(5, 14, len(paddle)+1)
+            paddle.append(p4)
+            paddle.append(p5)
+            grid[14][p4.y].add_paddle(p4)
+            grid[14][p5.y].add_paddle(p5)
+            while timer < 15:
+                time.sleep(1)
+                timer += 1
+            grid[14][p4.y].remove_paddle()
+            grid[14][p5.y].remove_paddle()
+            paddle.remove(p4)
+            paddle.remove(p5)
+            power_ups.remove(power_up)
+            return 1
+
+# On brixk destroy makes power up move downward
+def move_power_up(power_up):
+    while True:
+        time.sleep(0.5)
+        grid[power_up.x_pos][power_up.y_pos].remove_power_up()
+        power_up.update_position(power_up.x_pos + 1, power_up.y_pos)
+        if power_up.x_pos >= len(grid):
+            break
+        if grid[power_up.x_pos][power_up.y_pos].has_paddle:
+            power_ups.append(power_up)
+            p=threading.Thread(target=activate_power_up, args=(power_up,))
+            p.start()
+            p.join()
+            break
+        grid[power_up.x_pos][power_up.y_pos].add_power_up(power_up)
+
+## Driver Functions
+# Creates Brick Pattern
 def add_bricks():
     grid[1][2].add_brick(BlueBrick())
     grid[1][3].add_brick(BlueBrick())
@@ -70,28 +148,8 @@ def add_bricks():
     grid[5][11].add_brick(BlueBrick())
     grid[5][12].add_brick(GreenBrick())
 
-def activate_power_up(power_up):
-    timer = 0
-    # Expand
-    if power_up.number == 0:
-        if len(paddle) <= 3:
-            p4 = Paddle(4, 14, len(paddle))
-            p5 = Paddle(5, 14, len(paddle)+1)
-            paddle.append(p4)
-            paddle.append(p5)
-            grid[14][p4.y].add_paddle(p4)
-            grid[14][p5.y].add_paddle(p5)
-            while timer < 15:
-                time.sleep(1)
-                timer += 1
-            grid[14][p4.y].remove_paddle()
-            grid[14][p5.y].remove_paddle()
-            paddle.remove(p4)
-            paddle.remove(p5)
-            power_ups.remove(power_up)
-            return 1
 
-
+# Gets Points having bricks from a list of points
 def has_bricks(points):
     req_points = []
     for point in points:
@@ -99,7 +157,7 @@ def has_bricks(points):
             req_points.append(point)
     return req_points
 
-
+# If brick add score and destroy brick (Irrespective of type)
 def destroy(x, y):
     global score
     if grid[x][y].has_brick:
@@ -118,7 +176,7 @@ def destroy(x, y):
         render()
         time.sleep(0.1)
 
-
+# Special brick call destroy on all adjacent bricks
 def bombard(x, y):
     grid[x][y].remove_object()
     destroy(x, y - 1)
@@ -130,16 +188,17 @@ def bombard(x, y):
     destroy(x + 1, y)
     destroy(x + 1, y - 1)
 
-
+# Initializing the grid
 def initialize(x, y):
     global grid
     for i in range(x):
         for j in range(y):
             grid = [[Placeholder() for j in range(y)] for i in range(x)]
 
+
 num_bricks=1
 
-
+# Renders View
 def render():
     # Legend
     print(RedBrick(), " - 3 Points ", BlueBrick(), " - 2 Points ", GreenBrick(), " - 1 Point\n" + str(InvicibleBrick()), " - Cannot be broken ", BombBrick(), " - Destroy all bricks around\n")
@@ -156,21 +215,7 @@ def render():
     print("\n", Expand(-1, -1), " - Expand size of paddle by 2 (max till length 5) for 15 seconds")
 
 
-def move_power_up(power_up):
-    while True:
-        time.sleep(0.5)
-        grid[power_up.x_pos][power_up.y_pos].remove_power_up()
-        power_up.update_position(power_up.x_pos + 1, power_up.y_pos)
-        if power_up.x_pos >= len(grid):
-            break
-        if grid[power_up.x_pos][power_up.y_pos].has_paddle:
-            power_ups.append(power_up)
-            p=threading.Thread(target=activate_power_up, args=(power_up,))
-            p.start()
-            p.join()
-            break
-        grid[power_up.x_pos][power_up.y_pos].add_power_up(power_up)
-
+# Moves ball (Also causes continous render)
 def move():
     global score
     while True:
@@ -382,38 +427,6 @@ def move():
         if num_bricks <= 0:
             break
         time.sleep(0.5)
-
-
-def inp():
-    global num_bricks
-    global is_attached
-    while True and num_bricks > 0:
-        dir = getch()
-        # dir = sys.stdin.read(1)
-        if dir == "a" or dir == "A":
-            if (paddle[0].y > 0):
-                for i in range(len(paddle)):
-                    grid[paddle[i].x][paddle[i].y].remove_paddle()
-                    paddle[i].update_y(paddle[i].y - 1)
-        if dir == "d" or dir == "D":
-            if paddle[len(paddle) - 1].y < len(grid[0]) - 1:
-                for i in range(len(paddle)):
-                    grid[paddle[i].x][paddle[i].y].remove_paddle()
-                    paddle[i].update_y(paddle[i].y + 1)
-        if dir == " ":
-            if is_attached:
-                ball.update_velo(-1, -1)
-                is_attached = False
-                continue
-
-        if is_attached:
-            grid[ball.x_pos][ball.y_pos].remove_ball()
-            ball.update_position(ball.x_pos, paddle[round(len(paddle) / 2) - 1].y)
-            grid[ball.x_pos][ball.y_pos].add_ball(ball)
-
-        for i in range(len(paddle)):
-            grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
-
 
 if __name__ == '__main__':
     expand = Expand(2, 5)
