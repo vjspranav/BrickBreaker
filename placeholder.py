@@ -6,6 +6,7 @@ init(autoreset=True)
 class Placeholder:
     def __init__(self):
         self.object = None
+        self.power_up = None
         self.ball = None
         self.paddle = None
         self.has_object = False
@@ -20,19 +21,12 @@ class Placeholder:
         self.has_brick = True
 
     def add_power_up(self, obj):
-        self.object = obj
-        self.has_object = True
+        self.power_up = obj
         self.has_power_up = True
 
     def add_ball(self, obj):
         self.ball = obj
         self.has_ball = True
-
-    def remove_object(self):
-        self.object = None
-        self.has_object = False
-        self.has_brick = False
-        self.has_power_up = False
 
     def add_paddle(self, obj):
         self.paddle = obj
@@ -44,6 +38,12 @@ class Placeholder:
     def get_paddle(self):
         return self.paddle
 
+    def remove_object(self):
+        self.object = None
+        self.has_object = False
+        self.has_brick = False
+        self.has_power_up = False
+
     def remove_ball(self):
         self.has_ball = False
         self.ball = None
@@ -52,6 +52,10 @@ class Placeholder:
         if self.has_paddle:
             self.paddle = None
             self.has_paddle = False
+
+    def remove_power_up(self):
+        self.power_up = None
+        self.has_power_up = False
 
     def collide(self):
         if self.has_brick:

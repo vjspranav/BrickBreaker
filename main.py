@@ -10,6 +10,7 @@ from ball import Ball
 
 grid = []
 paddle = [Paddle(0, 14, 10), Paddle(1, 14, 11), Paddle(2, 14, 12)]
+power_ups = []
 ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
@@ -58,7 +59,11 @@ def initialize(x, y):
             grid = [[Placeholder() for j in range(y)] for i in range(x)]
 
 num_bricks=1
+
+
 def render():
+    # Legend
+    print(RedBrick(), " - 3 Points ", BlueBrick(), " - 2 Points ", GreenBrick(), " - 1 Point\n" + str(InvicibleBrick()), " - Cannot be broken ", BombBrick(), " - Destroy all bricks around\n")
     global num_bricks
     num_bricks = 0
     print("Num Lives : ", ball.lives, "\tCur Score : ", score)
@@ -69,6 +74,18 @@ def render():
                 if grid[i][j].get_object().num_lives > 0:
                     num_bricks += 1
         print("")
+
+
+def move_power_up(power_up):
+    while True:
+        grid[power_up.x_pos][power_up.y_pos].remove_power_up()
+        power_up.update_position(power_up.x_pos + 1, power_up.y_pos)
+        if grid[power_up.x_pos][power_up.y_pos].has_paddle:
+            power_ups.append(power_up)
+            break
+        if power_up.x_pos < len(grid)-1:
+            break
+        grid[power_up.x_pos][power_up.y_pos].add_power_up(power_up)
 
 
 def move():
@@ -262,8 +279,6 @@ def move():
                     new_x = brick_x + 1
                     new_y = brick_y
                     ball.update_velo(-ball.x_vel, ball.y_vel)
-
-            #            if ball.y_vel > 0:
 
             ball.update_position(new_x, new_y)
             grid[cur_x][cur_y].remove_ball()
