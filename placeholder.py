@@ -42,7 +42,6 @@ class Placeholder:
         self.object = None
         self.has_object = False
         self.has_brick = False
-        self.has_power_up = False
 
     def remove_ball(self):
         self.has_ball = False
@@ -75,4 +74,6 @@ class Placeholder:
             return str(self.object)
         if self.has_paddle:
             return str(self.paddle)
+        if self.has_power_up:
+            return str(self.power_up)
         return Back.LIGHTWHITE_EX + "  *  "

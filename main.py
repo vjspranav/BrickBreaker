@@ -6,6 +6,8 @@ from geometry import return_closest_point, points_in_line
 from placeholder import Placeholder
 from paddle import Paddle
 from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick
+from power_up import Expand
+
 from ball import Ball
 
 grid = []
@@ -35,6 +37,9 @@ def destroy(x, y):
         elif grid[x][y].get_object().num_lives == -1:
             score += 1
         grid[x][y].remove_object()
+        if grid[x][y].has_power_up:
+            p=threading.Thread(target=move_power_up, args=(expand,))
+            p.start()
         system("clear")
         render()
         time.sleep(0.1)
@@ -78,15 +83,15 @@ def render():
 
 def move_power_up(power_up):
     while True:
+        time.sleep(0.5)
         grid[power_up.x_pos][power_up.y_pos].remove_power_up()
         power_up.update_position(power_up.x_pos + 1, power_up.y_pos)
+        if power_up.x_pos >= len(grid):
+            break
         if grid[power_up.x_pos][power_up.y_pos].has_paddle:
             power_ups.append(power_up)
             break
-        if power_up.x_pos < len(grid)-1:
-            break
         grid[power_up.x_pos][power_up.y_pos].add_power_up(power_up)
-
 
 def move():
     global score
@@ -287,12 +292,15 @@ def move():
                 bombard(brick_x, brick_y)
             cur_point = grid[brick_x][brick_y].collide()
             score += cur_point
-
+            if not grid[brick_x][brick_y].has_brick:
+                if grid[brick_x][brick_y].has_power_up:
+                    threading.Thread(target=move_power_up, args=(expand,)).start()
         ball.update_position(new_x, new_y)
         grid[cur_x][cur_y].remove_ball()
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
         system("clear")
         render()
+        print("Active Power Ups: ", power_ups)
         if num_bricks <= 0:
             break
         time.sleep(0.5)
@@ -330,6 +338,7 @@ def inp():
 
 
 if __name__ == '__main__':
+    expand = Expand(2, 5)
     initialize(15, 17)
     grid[1][2].add_brick(BlueBrick())
     grid[1][3].add_brick(BlueBrick())
@@ -358,9 +367,13 @@ if __name__ == '__main__':
     grid[paddle[0].x][paddle[0].y].add_paddle(paddle[0])
     grid[paddle[1].x][paddle[1].y].add_paddle(paddle[1])
     grid[paddle[2].x][paddle[2].y].add_paddle(paddle[2])
+    grid[expand.x_pos][expand.y_pos].add_power_up(expand)
     t1 = threading.Thread(target=inp)
     t1.start()
+    # p1 = threading.Thread(target=move_power_up, args=(expand,))
+    # p1.start()
     move()
     t1.join()
+    # p1.join()
     system("clear")
     print("Thank you for playing")
