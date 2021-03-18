@@ -16,7 +16,7 @@ power_ups = []
 ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
-
+sleep = 100
 
 # Functions run in threads
 
@@ -204,7 +204,7 @@ def render():
     print(RedBrick(), " - 3 Points ", BlueBrick(), " - 2 Points ", GreenBrick(), " - 1 Point\n" + str(InvicibleBrick()), " - Cannot be broken ", BombBrick(), " - Destroy all bricks around\n")
     global num_bricks
     num_bricks = 0
-    print("Num Lives : ", ball.lives, "\tCur Score : ", score)
+    print("Num Lives : ", ball.lives, "\tCur Score : ", score, "\tTime before moving down: ", round(sleep/10, 0))
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
@@ -215,9 +215,27 @@ def render():
     print("\n", Expand(-1, -1), " - Expand size of paddle by 2 (max till length 5) for 15 seconds")
 
 
+def move_bricks_down():
+    global num_bricks
+    for i in range(len(grid[0])):
+        if grid[len(grid) - 1][i].has_brick:
+            system("clear")
+            print("GAME OVER")
+            num_bricks=0
+            return -1
+    for i in range(len(grid) - 2, -1, -1):
+        for j in range(len(grid[0])):
+            if grid[i][j].has_brick:
+                grid[i + 1][j].add_brick(grid[i][j].get_object())
+                grid[i][j].remove_object()
+                if grid[i][j].has_power_up:
+                    grid[i + 1][j].add_power_up(grid[i][j].get_power_up())
+                    grid[i][j].remove_power_up()
+
 # Moves ball (Also causes continous render)
 def move():
     global score
+    global sleep
     while True:
         if is_attached:
             system("clear")
@@ -264,6 +282,9 @@ def move():
                     else:
                         new_vel_x = -ball.x_vel
                         new_vel_y = ball.y_vel  # + 1
+                if sleep < 0:
+                    if move_bricks_down() == -1:
+                        return -1
 
                 if new_vel_x > 3:
                     new_vel_x = 3
@@ -279,7 +300,7 @@ def move():
             if ball.lives < 1:
                 system("clear")
                 print("GAME OVER")
-                break
+                return -1
             ball.decrease_life()
             ball.update_position(4, 4)
             ball.update_velo(-1, 1)
@@ -427,6 +448,9 @@ def move():
         if num_bricks <= 0:
             break
         time.sleep(0.5)
+        if sleep > 0:
+            sleep-=3
+            continue
 
 if __name__ == '__main__':
     expand = Expand(2, 5)

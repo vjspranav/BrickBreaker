@@ -35,6 +35,9 @@ class Placeholder:
     def get_object(self):
         return self.object
 
+    def get_power_up(self):
+        return self.power_up
+
     def get_paddle(self):
         return self.paddle
 
