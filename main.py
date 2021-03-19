@@ -121,7 +121,20 @@ def move_power_up(power_up):
     while True:
         time.sleep(0.5)
         grid[power_up.x_pos][power_up.y_pos].remove_power_up()
-        power_up.update_position(power_up.x_pos + 1, power_up.y_pos)
+        new_x = power_up.x_pos
+        new_y = power_up.y_pos
+        if level != 4:
+            new_x = power_up.x_pos + power_up.x_vel
+            new_y = power_up.y_pos + power_up.y_vel
+            if new_x <= 0 or new_x >= len(grid):
+                new_x = power_up.x_pos
+                power_up.update_velocity(0, power_up.y_vel)
+            if new_y <= 0 or new_y >= len(grid[0]):
+                new_y = power_up.y_pos
+                power_up.update_velocity(power_up.x_vel, 0)
+        else:
+            new_x = new_x + 1
+        power_up.update_position(new_x, new_y)
         if power_up.x_pos >= len(grid):
             break
         if grid[power_up.x_pos][power_up.y_pos].has_paddle:
@@ -300,6 +313,7 @@ def destroy(x, y):
             score += 1
         grid[x][y].remove_object()
         if grid[x][y].has_power_up:
+            grid[x][y].update_velocity(ball.x_vel, -ball.y_vel)
             p = threading.Thread(target=move_power_up, args=(grid[x][y].get_power_up(),))
             p.start()
         system("clear")

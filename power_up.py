@@ -5,11 +5,17 @@ class __PowerUp:
     def __init__(self, x, y, number):
         self.x_pos = x
         self.y_pos = y
+        self.x_vel = 0
+        self.y_vel = 0
         self.number = number
 
     def update_position(self, x, y):
         self.x_pos = x
         self.y_pos = y
+
+    def update_velocity(self, x, y):
+        self.x_vel = x
+        self.y_vel = y
 
 class Expand(__PowerUp):
     def __init__(self, x, y):
