@@ -17,10 +17,12 @@ ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
 sleep = 100
-#debug
-num_hit=1
 
-def inp_check(t1):
+# debug
+num_hit = 1
+
+
+def inp_check():
     while True and num_bricks > 0:
         old_number = num_hit
         time.sleep(0.5)
@@ -62,7 +64,7 @@ def inp():
 
             for i in range(len(paddle)):
                 grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
-            num_hit+=1
+            num_hit += 1
         except Exception:
             pass
         finally:
@@ -252,6 +254,7 @@ def move_bricks_down():
             print("GAME OVER")
             num_bricks = 0
             return -1
+
 
 # Moves ball (Also causes continuous render)
 def move():
@@ -486,7 +489,7 @@ if __name__ == '__main__':
     grid[expand.x_pos][expand.y_pos].add_power_up(expand)
     t1 = threading.Thread(target=inp)
     t1.start()
-    t2 = threading.Thread(target=inp_check, args=(t1,))
+    t2 = threading.Thread(target=inp_check)
     t2.start()
     # p1 = threading.Thread(target=move_power_up, args=(expand,))
     # p1.start()
