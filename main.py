@@ -17,19 +17,23 @@ ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
 sleep = 100
+num_levels = 3
 
 # debug
 num_hit = 1
 
+level = 0
+
 
 def inp_check():
-    while True and num_bricks > 0:
+    while True and num_bricks > 0 and level <= num_levels:
         old_number = num_hit
         time.sleep(0.5)
         if old_number == num_hit:
             t1 = threading.Thread(target=inp)
             t1.start()
-
+    exit()
+    return
 
 # Functions run in threads
 # Input for paddle control
@@ -46,12 +50,20 @@ def inp():
                     for i in range(len(paddle)):
                         grid[paddle[i].x][paddle[i].y].remove_paddle()
                         paddle[i].update_y(paddle[i].y - 1)
-            if dir_input == "d" or dir_input == "D":
+            elif dir_input == "d" or dir_input == "D":
                 if paddle[len(paddle) - 1].y < len(grid[0]) - 1:
                     for i in range(len(paddle)):
                         grid[paddle[i].x][paddle[i].y].remove_paddle()
                         paddle[i].update_y(paddle[i].y + 1)
-            if dir_input == " ":
+            elif dir_input == "n" or dir_input == "N":
+                next_level()
+                if level > num_levels:
+                    exit()
+                    return
+                system("clear")
+                render()
+
+            elif dir_input == " ":
                 if is_attached:
                     ball.update_velo(-1, -1)
                     is_attached = False
@@ -112,59 +124,109 @@ def move_power_up(power_up):
 
 
 # Driver Functions
+
+def clear_grid():
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            grid[i][j].clear()
+
+
 # Creates Brick Pattern
 def add_bricks():
-    grid[1][2].add_brick(BlueBrick())
-    grid[1][3].add_brick(BlueBrick())
-    grid[1][4].add_brick(RedBrick())
-    grid[1][5].add_brick(GreenBrick())
-    grid[1][6].add_brick(BlueBrick())
-    grid[1][7].add_brick(RedBrick())
-    grid[1][8].add_brick(RedBrick())
-    grid[1][9].add_brick(GreenBrick())
-    grid[1][10].add_brick(BlueBrick())
-    grid[1][11].add_brick(BlueBrick())
-    grid[1][12].add_brick(InvicibleBrick())
-    grid[2][3].add_brick(RedBrick())
-    grid[2][4].add_brick(GreenBrick())
-    grid[2][5].add_brick(BlueBrick())
-    grid[2][6].add_brick(BombBrick())
-    grid[2][7].add_brick(BombBrick())
-    grid[2][8].add_brick(BombBrick())
-    grid[2][9].add_brick(BombBrick())
-    grid[2][10].add_brick(BombBrick())
-    grid[2][11].add_brick(BombBrick())
-    grid[3][2].add_brick(BlueBrick())
-    grid[3][3].add_brick(BlueBrick())
-    grid[3][4].add_brick(RedBrick())
-    grid[3][5].add_brick(GreenBrick())
-    grid[3][6].add_brick(InvicibleBrick())
-    grid[3][7].add_brick(BlueBrick())
-    grid[3][8].add_brick(GreenBrick())
-    grid[3][9].add_brick(RedBrick())
-    grid[3][10].add_brick(GreenBrick())
-    grid[3][11].add_brick(InvicibleBrick())
-    grid[3][12].add_brick(GreenBrick())
-    grid[4][3].add_brick(BombBrick())
-    grid[4][4].add_brick(BombBrick())
-    grid[4][5].add_brick(BombBrick())
-    grid[4][6].add_brick(BombBrick())
-    grid[4][7].add_brick(BombBrick())
-    grid[4][8].add_brick(BombBrick())
-    grid[4][9].add_brick(RedBrick())
-    grid[4][10].add_brick(BlueBrick())
-    grid[4][11].add_brick(BlueBrick())
-    grid[5][2].add_brick(GreenBrick())
-    grid[5][3].add_brick(BlueBrick())
-    grid[5][4].add_brick(GreenBrick())
-    grid[5][5].add_brick(BlueBrick())
-    grid[5][6].add_brick(GreenBrick())
-    grid[5][7].add_brick(BlueBrick())
-    grid[5][8].add_brick(GreenBrick())
-    grid[5][9].add_brick(BlueBrick())
-    grid[5][10].add_brick(GreenBrick())
-    grid[5][11].add_brick(BlueBrick())
-    grid[5][12].add_brick(GreenBrick())
+    if level == 1:
+        grid[1][2].add_brick(BlueBrick())
+        grid[1][3].add_brick(BlueBrick())
+        grid[1][4].add_brick(RedBrick())
+        grid[1][5].add_brick(GreenBrick())
+        grid[1][6].add_brick(BlueBrick())
+        grid[1][7].add_brick(RedBrick())
+        grid[1][8].add_brick(RedBrick())
+        grid[1][9].add_brick(GreenBrick())
+        grid[1][10].add_brick(BlueBrick())
+        grid[1][11].add_brick(BlueBrick())
+        grid[1][12].add_brick(InvicibleBrick())
+        grid[2][3].add_brick(RedBrick())
+        grid[2][4].add_brick(GreenBrick())
+        grid[2][5].add_brick(BlueBrick())
+        grid[2][6].add_brick(BombBrick())
+        grid[2][7].add_brick(BombBrick())
+        grid[2][8].add_brick(BombBrick())
+        grid[2][9].add_brick(BombBrick())
+        grid[2][10].add_brick(BombBrick())
+        grid[2][11].add_brick(BombBrick())
+        grid[3][2].add_brick(BlueBrick())
+        grid[3][3].add_brick(BlueBrick())
+        grid[3][4].add_brick(RedBrick())
+        grid[3][5].add_brick(GreenBrick())
+        grid[3][6].add_brick(InvicibleBrick())
+        grid[3][7].add_brick(BlueBrick())
+        grid[3][8].add_brick(GreenBrick())
+        grid[3][9].add_brick(RedBrick())
+        grid[3][10].add_brick(GreenBrick())
+        grid[3][11].add_brick(InvicibleBrick())
+        grid[3][12].add_brick(GreenBrick())
+        grid[4][3].add_brick(BombBrick())
+        grid[4][4].add_brick(BombBrick())
+        grid[4][5].add_brick(BombBrick())
+        grid[4][6].add_brick(BombBrick())
+        grid[4][7].add_brick(BombBrick())
+        grid[4][8].add_brick(BombBrick())
+        grid[4][9].add_brick(RedBrick())
+        grid[4][10].add_brick(BlueBrick())
+        grid[4][11].add_brick(BlueBrick())
+        grid[5][2].add_brick(GreenBrick())
+        grid[5][3].add_brick(BlueBrick())
+        grid[5][4].add_brick(GreenBrick())
+        grid[5][5].add_brick(BlueBrick())
+        grid[5][6].add_brick(GreenBrick())
+        grid[5][7].add_brick(BlueBrick())
+        grid[5][8].add_brick(GreenBrick())
+        grid[5][9].add_brick(BlueBrick())
+        grid[5][10].add_brick(GreenBrick())
+        grid[5][11].add_brick(BlueBrick())
+        grid[5][12].add_brick(GreenBrick())
+        #Power Ups
+        expand = Expand(2, 5)
+        grid[ball.x_pos][ball.y_pos].add_ball(ball)
+    elif level == 2:
+        grid[5][2].add_brick(GreenBrick())
+        grid[5][3].add_brick(BlueBrick())
+        grid[5][4].add_brick(GreenBrick())
+        grid[5][5].add_brick(BlueBrick())
+        grid[5][6].add_brick(GreenBrick())
+        grid[5][7].add_brick(BlueBrick())
+        grid[5][8].add_brick(GreenBrick())
+        grid[5][9].add_brick(BlueBrick())
+    elif level == 3:
+        grid[3][2].add_brick(BlueBrick())
+        grid[3][3].add_brick(BlueBrick())
+        grid[3][4].add_brick(RedBrick())
+        grid[3][5].add_brick(GreenBrick())
+        grid[3][6].add_brick(InvicibleBrick())
+        grid[3][7].add_brick(BlueBrick())
+        grid[3][8].add_brick(GreenBrick())
+        grid[3][9].add_brick(RedBrick())
+
+
+def next_level():
+    clear_grid()
+    global is_attached, level, num_bricks
+    if level > num_levels:
+        system("clear")
+        print("Thank You For playing")
+        global num_bricks
+        num_bricks = 0
+        exit()
+    level += 1
+    is_attached = True
+    grid[ball.x_pos][ball.y_pos].remove_ball()
+    ball.update_position(13, 11)
+    ball.update_velo(0, 0)
+    grid[ball.x_pos][ball.y_pos].add_ball(ball)
+    grid[paddle[0].x][paddle[0].y].add_paddle(paddle[0])
+    grid[paddle[1].x][paddle[1].y].add_paddle(paddle[1])
+    grid[paddle[2].x][paddle[2].y].add_paddle(paddle[2])
+    add_bricks()
 
 
 # Gets Points having bricks from a list of points
@@ -227,7 +289,7 @@ def render():
           " - Cannot be broken ", BombBrick(), " - Destroy all bricks around\n")
     global num_bricks
     num_bricks = 0
-    print("Num Lives : ", ball.lives, "\tCur Score : ", score, "\tTime before moving down: ", abs(round(sleep / 10, 0)))
+    print("Num Lives : ", ball.lives, "\tCur Score : ", score, "\tTime before moving down: ", abs(round(sleep / 10, 0)), "\tLevel: ", level)
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
@@ -235,6 +297,10 @@ def render():
                 if grid[i][j].get_object().num_lives > 0:
                     num_bricks += 1
         print("")
+    if level < 3 and num_bricks == 0:
+         num_bricks=1
+         next_level()
+
     print("\n", Expand(-1, -1), " - Expand size of paddle by 2 (max till length 5) for 15 seconds")
 
 
@@ -260,12 +326,16 @@ def move_bricks_down():
 def move():
     global score
     global sleep
-    while True:
+    while True and level <= num_levels:
         if is_attached:
             system("clear")
             render()
             time.sleep(0.5)
             continue
+
+        if level > num_levels:
+            return
+
         cur_x, cur_y = ball.x_pos, ball.y_pos
         new_x, new_y = ball.x_pos + ball.x_vel, ball.y_pos + ball.y_vel
 
@@ -469,7 +539,7 @@ def move():
         system("clear")
         render()
         print("Active Power Ups: ", power_ups)
-        if num_bricks <= 0:
+        if num_bricks <= 0 and level > 3:
             break
         time.sleep(0.5)
         if sleep > 0:
@@ -478,15 +548,10 @@ def move():
 
 
 if __name__ == '__main__':
-    expand = Expand(2, 5)
+    # Grid
     initialize(15, 17)
-    add_bricks()
-
-    grid[ball.x_pos][ball.y_pos].add_ball(ball)
-    grid[paddle[0].x][paddle[0].y].add_paddle(paddle[0])
-    grid[paddle[1].x][paddle[1].y].add_paddle(paddle[1])
-    grid[paddle[2].x][paddle[2].y].add_paddle(paddle[2])
-    grid[expand.x_pos][expand.y_pos].add_power_up(expand)
+    # Adding Bricks
+    next_level()
     t1 = threading.Thread(target=inp)
     t1.start()
     t2 = threading.Thread(target=inp_check)
@@ -494,7 +559,7 @@ if __name__ == '__main__':
     # p1 = threading.Thread(target=move_power_up, args=(expand,))
     # p1.start()
     move()
-    t1.join()
+    #t1.join()
     # p1.join()
     system("clear")
     print("Thank you for playing")

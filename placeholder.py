@@ -59,6 +59,17 @@ class Placeholder:
         self.power_up = None
         self.has_power_up = False
 
+    def clear(self):
+        self.object = None
+        self.power_up = None
+        self.ball = None
+        self.paddle = None
+        self.has_object = False
+        self.has_brick = False
+        self.has_power_up = False
+        self.has_ball = False
+        self.has_paddle = False
+
     def collide(self):
         if self.has_brick:
             self.object.collide()
