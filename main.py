@@ -5,7 +5,7 @@ from os import system
 from geometry import return_closest_point, points_in_line
 from placeholder import Placeholder
 from paddle import Paddle
-from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick
+from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick, RainbowBrick
 from power_up import Expand
 
 from ball import Ball
@@ -191,11 +191,11 @@ def add_bricks():
     elif level == 2:
         grid[5][2].add_brick(GreenBrick())
         grid[5][3].add_brick(BlueBrick())
-        grid[5][4].add_brick(GreenBrick())
+        grid[5][4].add_brick(RainbowBrick())
         grid[5][5].add_brick(BlueBrick())
         grid[5][6].add_brick(GreenBrick())
         grid[5][7].add_brick(BlueBrick())
-        grid[5][8].add_brick(GreenBrick())
+        grid[5][8].add_brick(RainbowBrick())
         grid[5][9].add_brick(BlueBrick())
     elif level == 3:
         grid[3][2].add_brick(BlueBrick())
@@ -294,8 +294,10 @@ def render():
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
             if grid[i][j].has_brick:
+                grid[i][j].get_object().change_color()
                 if grid[i][j].get_object().num_lives > 0:
                     num_bricks += 1
+
         print("")
     if level < 3 and num_bricks == 0:
          num_bricks=1
