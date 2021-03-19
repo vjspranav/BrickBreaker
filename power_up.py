@@ -11,12 +11,17 @@ class __PowerUp:
         self.x_pos = x
         self.y_pos = y
 
-    def decrease_life(self):
-        self.lives -= 1
-
 class Expand(__PowerUp):
     def __init__(self, x, y):
         super(Expand, self).__init__(x, y, 0)
 
     def __str__(self):
         return Back.LIGHTWHITE_EX + " " + Back.LIGHTBLUE_EX + Fore.LIGHTBLUE_EX + "   " + Back.LIGHTWHITE_EX + Fore.RESET + " "
+
+
+class Bomb(__PowerUp):
+    def __init__(self, x, y):
+        super(Bomb, self).__init__(x, y, 1)
+
+    def __str__(self):
+        return Back.LIGHTWHITE_EX + " " + Back.LIGHTRED_EX + Fore.LIGHTRED_EX + "   " + Back.LIGHTWHITE_EX + Fore.RESET + " "

@@ -6,7 +6,7 @@ from geometry import return_closest_point, points_in_line
 from placeholder import Placeholder
 from paddle import Paddle
 from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick, RainbowBrick, BossBrick
-from power_up import Expand
+from power_up import Expand, Bomb
 from ball import Ball
 
 grid = []
@@ -91,6 +91,7 @@ def inp():
 
 # Activates power up on collision with paddle
 def activate_power_up(power_up):
+    global curNumPaddles
     timer = 0
     # Expand
     if power_up.number == 0:
@@ -110,6 +111,9 @@ def activate_power_up(power_up):
             paddle.remove(p5)
             power_ups.remove(power_up)
             return 1
+    if power_up.number == 1:
+        ball.decrease_life()
+        power_ups.remove(power_up)
 
 
 # On brick destroy makes power up move downward
@@ -387,6 +391,7 @@ def move_bricks_down():
 def move():
     global score
     global sleep
+    num = 100
     while True and level <= num_levels:
         if is_attached:
             system("clear")
@@ -439,7 +444,13 @@ def move():
                             new_vel_x = -ball.x_vel
                             new_vel_y = ball.y_vel  # + 1
                     if sleep < 0:
-                        if move_bricks_down() == -1:
+                        if level == 4:
+                            bomb = Bomb(1, paddle[1].y)
+                            grid[bomb.x_pos][bomb.y_pos].add_power_up(bomb)
+                            p = threading.Thread(target=move_power_up, args=(bomb,))
+                            p.start()
+                            sleep = 100
+                        elif move_bricks_down() == -1:
                             return -1
                     system('aplay -q ./sounds/bounce.wav&')
                     if new_vel_x > 3:
@@ -605,6 +616,7 @@ def move():
             if not grid[brick_x][brick_y].has_brick:
                 if grid[brick_x][brick_y].has_power_up:
                     threading.Thread(target=move_power_up, args=(grid[brick_x][brick_y].get_power_up(),)).start()
+
         ball.update_position(new_x, new_y)
         grid[cur_x][cur_y].remove_ball()
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
