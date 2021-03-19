@@ -7,7 +7,6 @@ from placeholder import Placeholder
 from paddle import Paddle
 from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick, RainbowBrick
 from power_up import Expand
-
 from ball import Ball
 
 grid = []
@@ -116,6 +115,7 @@ def move_power_up(power_up):
             break
         if grid[power_up.x_pos][power_up.y_pos].has_paddle:
             power_ups.append(power_up)
+            system('aplay -q ./sounds/power_up.wav&')
             p = threading.Thread(target=activate_power_up, args=(power_up,))
             p.start()
             p.join()
@@ -187,7 +187,7 @@ def add_bricks():
         grid[5][12].add_brick(GreenBrick())
         #Power Ups
         expand = Expand(2, 5)
-        grid[ball.x_pos][ball.y_pos].add_ball(ball)
+        grid[expand.x_pos][expand.y_pos].add_power_up(expand)
     elif level == 2:
         grid[5][2].add_brick(GreenBrick())
         grid[5][3].add_brick(BlueBrick())
@@ -217,6 +217,7 @@ def next_level():
         global num_bricks
         num_bricks = 0
         exit()
+    system('aplay -q ./sounds/level.wav&')
     level += 1
     is_attached = True
     grid[ball.x_pos][ball.y_pos].remove_ball()
@@ -251,7 +252,7 @@ def destroy(x, y):
             score += 1
         grid[x][y].remove_object()
         if grid[x][y].has_power_up:
-            p = threading.Thread(target=move_power_up, args=(expand,))
+            p = threading.Thread(target=move_power_up, args=(grid[x][y].get_power_up(),))
             p.start()
         system("clear")
         render()
@@ -260,6 +261,7 @@ def destroy(x, y):
 
 # Special brick call destroy on all adjacent bricks
 def bombard(x, y):
+    system('aplay -q ./sounds/blast.wav&')
     grid[x][y].remove_object()
     destroy(x, y - 1)
     destroy(x - 1, y - 1)
@@ -316,6 +318,8 @@ def move_bricks_down():
                 if grid[i][j].has_power_up:
                     grid[i + 1][j].add_power_up(grid[i][j].get_power_up())
                     grid[i][j].remove_power_up()
+                    grid[i + 1][j].get_power_up().update_position(i+1, j)
+
     for i in range(len(grid[0])):
         if grid[len(grid) - 1][i].has_brick:
             system("clear")
@@ -354,44 +358,47 @@ def move():
         # Handling walls
         if new_x >= len(grid) - 1:
             new_x = len(grid) - 1
-            if grid[new_x][new_y].has_paddle or grid[ball.x_pos + 1][ball.y_pos].has_paddle:
-                if not grid[new_x][new_y].has_paddle:
-                    new_x = ball.x_pos + 1
-                    new_y = ball.y_pos
-                p_no = grid[new_x][new_y].get_paddle().number
+            try:
+                if grid[new_x][new_y].has_paddle or grid[ball.x_pos + 1][ball.y_pos].has_paddle:
+                    if not grid[new_x][new_y].has_paddle:
+                        new_x = ball.x_pos + 1
+                        new_y = ball.y_pos
+                    p_no = grid[new_x][new_y].get_paddle().number
 
-                # Variable velocity and deflection works!!
-                if p_no < round(len(paddle) / 2) - 1:
-                    if ball.y_vel > 0:
+                    # Variable velocity and deflection works!!
+                    if p_no < round(len(paddle) / 2) - 1:
+                        if ball.y_vel > 0:
+                            new_vel_x = -ball.x_vel
+                            new_vel_y = -ball.y_vel  # +1
+                        else:
+                            new_vel_x = -ball.x_vel
+                            new_vel_y = ball.y_vel  # -1
+                    elif p_no == round(len(paddle) / 2) - 1:
                         new_vel_x = -ball.x_vel
-                        new_vel_y = -ball.y_vel  # +1
+                        new_vel_y = -ball.y_vel
                     else:
-                        new_vel_x = -ball.x_vel
-                        new_vel_y = ball.y_vel  # -1
-                elif p_no == round(len(paddle) / 2) - 1:
-                    new_vel_x = -ball.x_vel
-                    new_vel_y = -ball.y_vel
-                else:
-                    if ball.y_vel < 0:
-                        new_vel_x = -ball.x_vel
-                        new_vel_y = -ball.y_vel  # - 1
-                    else:
-                        new_vel_x = -ball.x_vel
-                        new_vel_y = ball.y_vel  # + 1
-                if sleep < 0:
-                    if move_bricks_down() == -1:
-                        return -1
-
-                if new_vel_x > 3:
-                    new_vel_x = 3
-                if new_vel_y > 3:
-                    new_vel_y = 3
-                if new_vel_x < -3:
-                    new_vel_x = -3
-                if new_vel_y < -3:
-                    new_vel_y = -3
-                ball.update_velo(new_vel_x, new_vel_y)
-                continue
+                        if ball.y_vel < 0:
+                            new_vel_x = -ball.x_vel
+                            new_vel_y = -ball.y_vel  # - 1
+                        else:
+                            new_vel_x = -ball.x_vel
+                            new_vel_y = ball.y_vel  # + 1
+                    if sleep < 0:
+                        if move_bricks_down() == -1:
+                            return -1
+                    system('aplay -q ./sounds/bounce.wav&')
+                    if new_vel_x > 3:
+                        new_vel_x = 3
+                    if new_vel_y > 3:
+                        new_vel_y = 3
+                    if new_vel_x < -3:
+                        new_vel_x = -3
+                    if new_vel_y < -3:
+                        new_vel_y = -3
+                    ball.update_velo(new_vel_x, new_vel_y)
+                    continue
+            except IndexError:
+                return
 
             if ball.lives < 1:
                 system("clear")
@@ -531,6 +538,7 @@ def move():
             if grid[brick_x][brick_y].get_object().num_lives == -2:
                 bombard(brick_x, brick_y)
             cur_point = grid[brick_x][brick_y].collide()
+            system('aplay -q ./sounds/collision.wav&')
             score += cur_point
             if not grid[brick_x][brick_y].has_brick:
                 if grid[brick_x][brick_y].has_power_up:
