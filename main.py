@@ -17,6 +17,16 @@ ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
 sleep = 100
+#debug
+num_hit=1
+
+def inp_check(t1):
+    while True and num_bricks > 0:
+        old_number = num_hit
+        time.sleep(0.5)
+        if old_number == num_hit:
+            t1 = threading.Thread(target=inp)
+            t1.start()
 
 
 # Functions run in threads
@@ -24,6 +34,7 @@ sleep = 100
 def inp():
     global num_bricks
     global is_attached
+    global num_hit
     while True and num_bricks > 0:
         # Catch what you can't fix
         try:
@@ -51,6 +62,7 @@ def inp():
 
             for i in range(len(paddle)):
                 grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
+            num_hit+=1
         except Exception:
             pass
         finally:
@@ -213,7 +225,7 @@ def render():
           " - Cannot be broken ", BombBrick(), " - Destroy all bricks around\n")
     global num_bricks
     num_bricks = 0
-    print("Num Lives : ", ball.lives, "\tCur Score : ", score, "\tTime before moving down: ", round(sleep / 10, 0))
+    print("Num Lives : ", ball.lives, "\tCur Score : ", score, "\tTime before moving down: ", abs(round(sleep / 10, 0)))
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
@@ -474,6 +486,8 @@ if __name__ == '__main__':
     grid[expand.x_pos][expand.y_pos].add_power_up(expand)
     t1 = threading.Thread(target=inp)
     t1.start()
+    t2 = threading.Thread(target=inp_check, args=(t1,))
+    t2.start()
     # p1 = threading.Thread(target=move_power_up, args=(expand,))
     # p1.start()
     move()
