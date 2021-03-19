@@ -253,20 +253,20 @@ def add_boss_bricks(num):
         grid[3][13].add_brick(RedBrick())
 
     if num == 2:
-        grid[3][0].add_brick(BlueBrick())
-        grid[3][1].add_brick(BlueBrick())
-        grid[3][2].add_brick(BlueBrick())
-        grid[3][3].add_brick(BlueBrick())
-        grid[3][4].add_brick(RedBrick())
-        grid[3][5].add_brick(GreenBrick())
-        grid[3][6].add_brick(InvicibleBrick())
-        grid[3][7].add_brick(BlueBrick())
-        grid[3][8].add_brick(GreenBrick())
-        grid[3][9].add_brick(RedBrick())
-        grid[3][10].add_brick(RedBrick())
-        grid[3][11].add_brick(RedBrick())
-        grid[3][12].add_brick(RedBrick())
-        grid[3][13].add_brick(RedBrick())
+        grid[2][0].add_brick(BlueBrick())
+        grid[2][1].add_brick(BlueBrick())
+        grid[2][2].add_brick(BlueBrick())
+        grid[2][3].add_brick(BlueBrick())
+        grid[2][4].add_brick(RedBrick())
+        grid[2][5].add_brick(GreenBrick())
+        grid[2][6].add_brick(InvicibleBrick())
+        grid[2][7].add_brick(BlueBrick())
+        grid[2][8].add_brick(GreenBrick())
+        grid[2][9].add_brick(RedBrick())
+        grid[2][10].add_brick(RedBrick())
+        grid[2][11].add_brick(RedBrick())
+        grid[2][12].add_brick(RedBrick())
+        grid[2][13].add_brick(RedBrick())
 
 
 def next_level():
@@ -617,6 +617,13 @@ def move():
             grid[ball.x_pos][ball.y_pos].add_ball(ball)
             if grid[brick_x][brick_y].get_object().num_lives == -2:
                 bombard(brick_x, brick_y)
+            if level == 4:
+                if grid[0][paddle[1].y].has_brick:
+                    if grid[0][paddle[1].y].get_object().num_lives <= 1:
+                        system("clear")
+                        print("Game Won\nPress Ctrl + C to exit")
+                        exit()
+                        return
             cur_point = grid[brick_x][brick_y].collide()
             system('aplay -q ./sounds/collision.wav&')
             # For Boss level
@@ -626,11 +633,11 @@ def move():
                         add_boss_bricks(1)
                     if grid[0][paddle[1].y].get_object().num_lives == 2:
                         add_boss_bricks(2)
-                if grid[0][paddle[1].y].get_object().num_lives <= 0:
-                    system("clear")
-                    print("game over")
-                    exit()
-                    return
+                    if grid[0][paddle[1].y].get_object().num_lives <= 0:
+                        system("clear")
+                        print("game over")
+                        exit()
+                        return
             score += cur_point
             if not grid[brick_x][brick_y].has_brick:
                 if grid[brick_x][brick_y].has_power_up:
