@@ -18,8 +18,8 @@ curNumPaddles, score = 3, 0
 is_attached = True
 sleep = 100
 
-# Functions run in threads
 
+# Functions run in threads
 # Input for paddle control
 def inp():
     global num_bricks
@@ -27,19 +27,18 @@ def inp():
     while True and num_bricks > 0:
         # Catch what you can't fix
         try:
-            dir = getch()
-            # dir = sys.stdin.read(1)
-            if dir == "a" or dir == "A":
-                if (paddle[0].y > 0):
+            dir_input = getch()
+            if dir_input == "a" or dir_input == "A":
+                if paddle[0].y > 0:
                     for i in range(len(paddle)):
                         grid[paddle[i].x][paddle[i].y].remove_paddle()
                         paddle[i].update_y(paddle[i].y - 1)
-            if dir == "d" or dir == "D":
+            if dir_input == "d" or dir_input == "D":
                 if paddle[len(paddle) - 1].y < len(grid[0]) - 1:
                     for i in range(len(paddle)):
                         grid[paddle[i].x][paddle[i].y].remove_paddle()
                         paddle[i].update_y(paddle[i].y + 1)
-            if dir == " ":
+            if dir_input == " ":
                 if is_attached:
                     ball.update_velo(-1, -1)
                     is_attached = False
@@ -52,8 +51,11 @@ def inp():
 
             for i in range(len(paddle)):
                 grid[paddle[i].x][paddle[i].y].add_paddle(paddle[i])
-        except:
+        except Exception:
+            pass
+        finally:
             continue
+
 
 # Activates power up on collision with paddle
 def activate_power_up(power_up):
@@ -62,7 +64,7 @@ def activate_power_up(power_up):
     if power_up.number == 0:
         if len(paddle) <= 3:
             p4 = Paddle(4, 14, len(paddle))
-            p5 = Paddle(5, 14, len(paddle)+1)
+            p5 = Paddle(5, 14, len(paddle) + 1)
             paddle.append(p4)
             paddle.append(p5)
             grid[14][p4.y].add_paddle(p4)
@@ -77,7 +79,8 @@ def activate_power_up(power_up):
             power_ups.remove(power_up)
             return 1
 
-# On brixk destroy makes power up move downward
+
+# On brick destroy makes power up move downward
 def move_power_up(power_up):
     while True:
         time.sleep(0.5)
@@ -87,13 +90,14 @@ def move_power_up(power_up):
             break
         if grid[power_up.x_pos][power_up.y_pos].has_paddle:
             power_ups.append(power_up)
-            p=threading.Thread(target=activate_power_up, args=(power_up,))
+            p = threading.Thread(target=activate_power_up, args=(power_up,))
             p.start()
             p.join()
             break
         grid[power_up.x_pos][power_up.y_pos].add_power_up(power_up)
 
-## Driver Functions
+
+# Driver Functions
 # Creates Brick Pattern
 def add_bricks():
     grid[1][2].add_brick(BlueBrick())
@@ -157,6 +161,7 @@ def has_bricks(points):
             req_points.append(point)
     return req_points
 
+
 # If brick add score and destroy brick (Irrespective of type)
 def destroy(x, y):
     global score
@@ -170,11 +175,12 @@ def destroy(x, y):
             score += 1
         grid[x][y].remove_object()
         if grid[x][y].has_power_up:
-            p=threading.Thread(target=move_power_up, args=(expand,))
+            p = threading.Thread(target=move_power_up, args=(expand,))
             p.start()
         system("clear")
         render()
         time.sleep(0.1)
+
 
 # Special brick call destroy on all adjacent bricks
 def bombard(x, y):
@@ -188,23 +194,26 @@ def bombard(x, y):
     destroy(x + 1, y)
     destroy(x + 1, y - 1)
 
+
 # Initializing the grid
 def initialize(x, y):
     global grid
     for i in range(x):
         for j in range(y):
-            grid = [[Placeholder() for j in range(y)] for i in range(x)]
+            grid = [[Placeholder() for _ in range(y)] for _ in range(x)]
 
 
-num_bricks=1
+num_bricks = 1
+
 
 # Renders View
 def render():
     # Legend
-    print(RedBrick(), " - 3 Points ", BlueBrick(), " - 2 Points ", GreenBrick(), " - 1 Point\n" + str(InvicibleBrick()), " - Cannot be broken ", BombBrick(), " - Destroy all bricks around\n")
+    print(RedBrick(), " - 3 Points ", BlueBrick(), " - 2 Points ", GreenBrick(), " - 1 Point\n" + str(InvicibleBrick()),
+          " - Cannot be broken ", BombBrick(), " - Destroy all bricks around\n")
     global num_bricks
     num_bricks = 0
-    print("Num Lives : ", ball.lives, "\tCur Score : ", score, "\tTime before moving down: ", round(sleep/10, 0))
+    print("Num Lives : ", ball.lives, "\tCur Score : ", score, "\tTime before moving down: ", round(sleep / 10, 0))
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             print(grid[i][j], end="")
@@ -217,12 +226,6 @@ def render():
 
 def move_bricks_down():
     global num_bricks
-    for i in range(len(grid[0])):
-        if grid[len(grid) - 1][i].has_brick:
-            system("clear")
-            print("GAME OVER")
-            num_bricks=0
-            return -1
     for i in range(len(grid) - 2, -1, -1):
         for j in range(len(grid[0])):
             if grid[i][j].has_brick:
@@ -231,8 +234,14 @@ def move_bricks_down():
                 if grid[i][j].has_power_up:
                     grid[i + 1][j].add_power_up(grid[i][j].get_power_up())
                     grid[i][j].remove_power_up()
+    for i in range(len(grid[0])):
+        if grid[len(grid) - 1][i].has_brick:
+            system("clear")
+            print("GAME OVER")
+            num_bricks = 0
+            return -1
 
-# Moves ball (Also causes continous render)
+# Moves ball (Also causes continuous render)
 def move():
     global score
     global sleep
@@ -264,7 +273,7 @@ def move():
                     new_y = ball.y_pos
                 p_no = grid[new_x][new_y].get_paddle().number
 
-                # VAriable velocity and deflection works!!
+                # Variable velocity and deflection works!!
                 if p_no < round(len(paddle) / 2) - 1:
                     if ball.y_vel > 0:
                         new_vel_x = -ball.x_vel
@@ -321,7 +330,7 @@ def move():
         # Getting Points that have bricks
         try:
             m = (new_y - cur_y) / (new_x - cur_x)
-        except:
+        except ZeroDivisionError:
             m = 0
         points_with_bricks = points_in_line(cur_x, cur_y, new_x, new_y)
         points_with_bricks = has_bricks(points_with_bricks)
@@ -330,7 +339,7 @@ def move():
                 if cur_x == points_with_bricks[i][0] and cur_y == points_with_bricks[i][1]:
                     points_with_bricks.remove(points_with_bricks[i])
 
-        p = 0
+        p = []
         if len(points_with_bricks) == 1:
             p = points_with_bricks[0]
 
@@ -338,7 +347,7 @@ def move():
             p = return_closest_point(cur_x, cur_y, points_with_bricks)
 
         # Handling brick collision
-        if p:
+        if len(p) > 0:
             vel_x = ball.x_vel
             vel_y = ball.y_vel
             brick_x = p[0]
@@ -364,7 +373,7 @@ def move():
                     new_x = brick_x - 1
                     new_y = brick_y
                     ball.update_velo(-ball.x_vel, ball.y_vel)
-            elif vel_y > 0 and vel_x < 0:
+            elif vel_y > 0 > vel_x:
                 if m == -1:
                     new_x = brick_x + 1
                     new_y = brick_y - 1
@@ -385,7 +394,7 @@ def move():
                     new_y = brick_y
                     ball.update_velo(-ball.x_vel, ball.y_vel)
 
-            elif vel_y < 0 and vel_x > 0:
+            elif vel_y < 0 < vel_x:
                 if m == -1:
                     new_x = brick_x - 1
                     new_y = brick_y + 1
@@ -449,8 +458,9 @@ def move():
             break
         time.sleep(0.5)
         if sleep > 0:
-            sleep-=3
+            sleep -= 3
             continue
+
 
 if __name__ == '__main__':
     expand = Expand(2, 5)
