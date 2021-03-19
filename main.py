@@ -216,6 +216,42 @@ def add_bricks():
     elif level == 4:
         grid[0][paddle[1].y].add_brick(BossBrick())
 
+
+# For Boss
+def add_boss_bricks(num):
+    if num == 1:
+        grid[3][0].add_brick(BlueBrick())
+        grid[3][1].add_brick(BlueBrick())
+        grid[3][2].add_brick(BlueBrick())
+        grid[3][3].add_brick(BlueBrick())
+        grid[3][4].add_brick(RedBrick())
+        grid[3][5].add_brick(GreenBrick())
+        grid[3][6].add_brick(InvicibleBrick())
+        grid[3][7].add_brick(BlueBrick())
+        grid[3][8].add_brick(GreenBrick())
+        grid[3][9].add_brick(RedBrick())
+        grid[3][10].add_brick(RedBrick())
+        grid[3][11].add_brick(RedBrick())
+        grid[3][12].add_brick(RedBrick())
+        grid[3][13].add_brick(RedBrick())
+
+    if num == 2:
+        grid[3][0].add_brick(BlueBrick())
+        grid[3][1].add_brick(BlueBrick())
+        grid[3][2].add_brick(BlueBrick())
+        grid[3][3].add_brick(BlueBrick())
+        grid[3][4].add_brick(RedBrick())
+        grid[3][5].add_brick(GreenBrick())
+        grid[3][6].add_brick(InvicibleBrick())
+        grid[3][7].add_brick(BlueBrick())
+        grid[3][8].add_brick(GreenBrick())
+        grid[3][9].add_brick(RedBrick())
+        grid[3][10].add_brick(RedBrick())
+        grid[3][11].add_brick(RedBrick())
+        grid[3][12].add_brick(RedBrick())
+        grid[3][13].add_brick(RedBrick())
+
+
 def next_level():
     clear_grid()
     global is_attached, level, num_bricks
@@ -558,10 +594,17 @@ def move():
                 bombard(brick_x, brick_y)
             cur_point = grid[brick_x][brick_y].collide()
             system('aplay -q ./sounds/collision.wav&')
+            # For Boss level
+            if level == 4:
+                if grid[0][paddle[1].y].has_brick:
+                    if grid[0][paddle[1].y].get_object().num_lives == 5:
+                        add_boss_bricks(1)
+                    if grid[0][paddle[1].y].get_object().num_lives == 2:
+                        add_boss_bricks(2)
             score += cur_point
             if not grid[brick_x][brick_y].has_brick:
                 if grid[brick_x][brick_y].has_power_up:
-                    threading.Thread(target=move_power_up, args=(expand,)).start()
+                    threading.Thread(target=move_power_up, args=(grid[brick_x][brick_y].get_power_up(),)).start()
         ball.update_position(new_x, new_y)
         grid[cur_x][cur_y].remove_ball()
         grid[ball.x_pos][ball.y_pos].add_ball(ball)
