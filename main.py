@@ -626,6 +626,11 @@ def move():
                         add_boss_bricks(1)
                     if grid[0][paddle[1].y].get_object().num_lives == 2:
                         add_boss_bricks(2)
+                if grid[0][paddle[1].y].get_object().num_lives <= 0:
+                    system("clear")
+                    print("game over")
+                    exit()
+                    return
             score += cur_point
             if not grid[brick_x][brick_y].has_brick:
                 if grid[brick_x][brick_y].has_power_up:

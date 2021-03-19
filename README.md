@@ -23,3 +23,16 @@ make install
 ```
 make run
 ```
+
+## Game instructions
+* Use **a** and **d** to move paddle left and right
+* Space to launch the ball
+* Use **n** to advance to next level
+
+
+## Other instructions
+* There is one power up that extends the size of paddle
+* A user has 3 + 1 (4) Lives
+* If ball hits bottom wall, life is lost
+* If paddle takes bomb from boss monster life is lost.
+* To kill boss monster it needs to be hit 10 times
