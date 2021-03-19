@@ -67,6 +67,14 @@ class BombBrick(_Brick):
         super().__init__("orange", -2)
 
 
+class BossBrick(_Brick):
+    def __init__(self):
+        super().__init__("gray", 10)
+
+    def __str__(self):
+        return bg_color["red"] + "<" + bg_color["green"] + "|_|" + bg_color["red"] + ">"
+
+
 class RainbowBrick(_Brick):
     def __init__(self):
         super().__init__("blue", -2)

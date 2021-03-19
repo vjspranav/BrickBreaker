@@ -5,7 +5,7 @@ from os import system
 from geometry import return_closest_point, points_in_line
 from placeholder import Placeholder
 from paddle import Paddle
-from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick, RainbowBrick
+from brick import BlueBrick, RedBrick, GreenBrick, InvicibleBrick, BombBrick, RainbowBrick, BossBrick
 from power_up import Expand
 from ball import Ball
 
@@ -16,7 +16,7 @@ ball = Ball(13, 11)
 curNumPaddles, score = 3, 0
 is_attached = True
 sleep = 100
-num_levels = 3
+num_levels = 4
 
 # debug
 num_hit = 1
@@ -34,6 +34,7 @@ def inp_check():
     exit()
     return
 
+
 # Functions run in threads
 # Input for paddle control
 def inp():
@@ -46,11 +47,17 @@ def inp():
             dir_input = getch()
             if dir_input == "a" or dir_input == "A":
                 if paddle[0].y > 0:
+                    if level == num_levels:
+                        grid[0][paddle[1].y-1].add_brick(grid[0][paddle[1].y].get_object())
+                        grid[0][paddle[1].y].remove_object()
                     for i in range(len(paddle)):
                         grid[paddle[i].x][paddle[i].y].remove_paddle()
                         paddle[i].update_y(paddle[i].y - 1)
             elif dir_input == "d" or dir_input == "D":
                 if paddle[len(paddle) - 1].y < len(grid[0]) - 1:
+                    if level == num_levels:
+                        grid[0][paddle[1].y + 1].add_brick(grid[0][paddle[1].y].get_object())
+                        grid[0][paddle[1].y].remove_object()
                     for i in range(len(paddle)):
                         grid[paddle[i].x][paddle[i].y].remove_paddle()
                         paddle[i].update_y(paddle[i].y + 1)
@@ -206,7 +213,8 @@ def add_bricks():
         grid[3][7].add_brick(BlueBrick())
         grid[3][8].add_brick(GreenBrick())
         grid[3][9].add_brick(RedBrick())
-
+    elif level == 4:
+        grid[0][paddle[1].y].add_brick(BossBrick())
 
 def next_level():
     clear_grid()
@@ -305,11 +313,22 @@ def render():
          num_bricks=1
          next_level()
 
-    print("\n", Expand(-1, -1), " - Expand size of paddle by 2 (max till length 5) for 15 seconds")
+    if level == 4:
+        if grid[0][paddle[1].y].has_brick:
+            print("Boss Health: [", end="")
+            for _ in range(grid[0][paddle[1].y].get_object().num_lives):
+                print("=", end="")
+            for _ in range(10 - grid[0][paddle[1].y].get_object().num_lives):
+                print(" ", end="")
+            print("]")
+    else:
+        print("\n", Expand(-1, -1), " - Expand size of paddle by 2 (max till length 5) for 15 seconds")
 
 
 def move_bricks_down():
     global num_bricks
+    if level == 4:
+        return
     for i in range(len(grid) - 2, -1, -1):
         for j in range(len(grid[0])):
             if grid[i][j].has_brick:
