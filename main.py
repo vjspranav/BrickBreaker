@@ -313,7 +313,7 @@ def destroy(x, y):
             score += 1
         grid[x][y].remove_object()
         if grid[x][y].has_power_up:
-            grid[x][y].update_velocity(ball.x_vel, -ball.y_vel)
+            grid[x][y].get_power_up().update_velocity(ball.x_vel, -ball.y_vel)
             p = threading.Thread(target=move_power_up, args=(grid[x][y].get_power_up(),))
             p.start()
         system("clear")
